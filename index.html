@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="hu" class="dark">
+<html lang="hu">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Kinek a képe? – Spin &amp; Guess Partijáték</title>
+  <title>A Tárlat — Kinek a műve? | Művészeti Partijáték</title>
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -11,26 +11,32 @@
   <!-- PeerJS CDN a szerver nélküli WebRTC P2P multiplayer kapcsolathoz (GitHub Pages kompatibilis) -->
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 
-  <!-- Google Fonts: Outfit (címek) és Inter (szövegtörzs) -->
+  <!-- Google Fonts: Cormorant Garamond, Playfair Display (klasszikus galéria) & Plus Jakarta Sans (modern UI) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
 
   <script>
     tailwind.config = {
-      darkMode: 'class',
       theme: {
         extend: {
           fontFamily: {
-            sans: ['Inter', 'sans-serif'],
-            display: ['Outfit', 'sans-serif'],
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            serif: ['"Playfair Display"', '"Cormorant Garamond"', 'Georgia', 'serif'],
+            garamond: ['"Cormorant Garamond"', 'Georgia', 'serif'],
           },
           colors: {
-            neon: {
-              purple: '#a855f7',
-              pink: '#ec4899',
-              amber: '#f59e0b',
-              cyan: '#06b6d4',
+            gallery: {
+              alabaster: '#F6F3EC',
+              parchment: '#ECE7DD',
+              cream: '#FAF8F5',
+              charcoal: '#1B1917',
+              stone: '#57534E',
+              brass: '#C29B48',
+              brassDark: '#9A7830',
+              brassLight: '#E5CE94',
+              burgundy: '#6E2626',
+              burgundyDark: '#4A1616',
             }
           }
         }
@@ -39,490 +45,641 @@
   </script>
 
   <style>
-    /* Alap sötét módú téma és egyedi görgetősáv */
+    /* =========================================================================
+       KLASSZIKUS MÚZEUMI & KÉPGALÉRIA ESZTÉTIKA
+       ========================================================================= */
     :root {
-      color-scheme: dark;
+      --bg-wall: #F6F3EC;
+      --bg-parchment: #ECE7DD;
+      --ink-charcoal: #1B1917;
+      --ink-muted: #57534E;
+      --accent-brass: #C29B48;
+      --accent-brass-dark: #9A7830;
+      --accent-burgundy: #6E2626;
     }
 
     body {
-      background-color: #090612;
-      color: #f8fafc;
-      font-family: 'Inter', sans-serif;
-      overflow-x: hidden;
+      background-color: var(--bg-wall);
+      /* Finom múzeumi vakolat / vászon textúra */
+      background-image:
+        radial-gradient(circle at 50% 0%, rgba(255, 252, 245, 0.9) 0%, rgba(236, 231, 221, 0.55) 100%),
+        url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%239a7830' fill-opacity='0.035'%3E%3Cpath d='M0 0h40v40H0V0zm40 40h40v40H40V40zm0-40h2l-2 2V0zm0 4l4-4h2l-6 6V4zm0 4l8-8h2L40 10V8zm0 4L52 0h2L40 14v-2zm0 4L56 0h2L40 18v-2zm0 4L60 0h2L40 22v-2zm0 4L64 0h2L40 26v-2zm0 4L68 0h2L40 30v-2zm0 4L72 0h2L40 34v-2zm0 4L76 0h2L40 38v-2zm0 4L80 0v2L42 40h-2zm4 0L80 4v2L46 40h-2zm4 0L80 8v2L50 40h-2zm4 0l28-28v2L54 40h-2zm4 0l24-24v2L58 40h-2zm4 0l20-20v2L62 40h-2zm4 0l16-16v2L66 40h-2zm4 0l12-12v2L70 40h-2zm4 0l8-8v2l-6 6h-2zm4 0l4-4v2l-2 2h-2z'/%3E%3C/g%3E%3C/svg%3E");
+      color: var(--ink-charcoal);
+      font-family: 'Plus Jakarta Sans', sans-serif;
       min-height: 100dvh;
+      overflow-x: hidden;
     }
 
-    h1, h2, h3, .font-display {
-      font-family: 'Outfit', sans-serif;
+    h1, h2, h3, .font-serif-display {
+      font-family: 'Playfair Display', Georgia, serif;
     }
 
-    /* Üveghatású (Glassmorphism) kártyák */
-    .glass-card {
-      background: rgba(22, 16, 40, 0.68);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    .font-garamond {
+      font-family: 'Cormorant Garamond', Georgia, serif;
     }
 
-    .glass-pill {
-      background: rgba(255, 255, 255, 0.06);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+    /* Múzeumi kártya (finom sárgaréz szegéllyel és meleg papír árnyékkal) */
+    .museum-card {
+      background: rgba(250, 248, 245, 0.94);
+      border: 1px solid rgba(194, 155, 72, 0.35);
+      box-shadow:
+        0 14px 35px -10px rgba(27, 25, 23, 0.08),
+        0 4px 12px -2px rgba(27, 25, 23, 0.04),
+        inset 0 1px 0 rgba(255, 255, 255, 0.95);
     }
 
-    /* Neon fények és szegélyek */
-    .neon-glow-purple {
-      box-shadow: 0 0 25px rgba(168, 85, 247, 0.35), 0 0 60px rgba(236, 72, 153, 0.15);
+    .museum-inset {
+      background: #F1EDE4;
+      border: 1px solid rgba(154, 120, 48, 0.25);
+      box-shadow: inset 0 2px 6px rgba(27, 25, 23, 0.05);
     }
 
-    .neon-glow-amber {
-      box-shadow: 0 0 30px rgba(245, 158, 11, 0.45), 0 0 70px rgba(245, 158, 11, 0.2);
+    /* Elsődleges múzeumi bordó-arany gomb */
+    .btn-museum-primary {
+      background: linear-gradient(135deg, #6E2626 0%, #4A1616 100%);
+      color: #FAF8F5;
+      border: 1px solid #C29B48;
+      box-shadow: 0 8px 20px -4px rgba(110, 38, 38, 0.35), inset 0 1px 0 rgba(229, 206, 148, 0.3);
+      transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
     }
 
-    .btn-gradient {
-      background: linear-gradient(135deg, #9333ea 0%, #ec4899 55%, #f59e0b 100%);
-      background-size: 200% 200%;
-      transition: all 0.25s ease;
-    }
-
-    .btn-gradient:hover:not(:disabled) {
-      background-position: right center;
+    .btn-museum-primary:hover:not(:disabled) {
+      background: linear-gradient(135deg, #7F2D2D 0%, #581B1B 100%);
       transform: translateY(-1px);
-      box-shadow: 0 10px 30px rgba(236, 72, 153, 0.4);
+      box-shadow: 0 12px 26px -4px rgba(110, 38, 38, 0.45), 0 0 0 2px rgba(194, 155, 72, 0.35);
     }
 
-    .btn-gradient:active:not(:disabled) {
-      transform: scale(0.98);
+    .btn-museum-primary:active:not(:disabled) {
+      transform: translateY(0);
     }
 
-    /* Háttér lebegő neon gömbök */
-    @keyframes floatSlow {
-      0%, 100% { transform: translate(0, 0) scale(1); }
-      33% { transform: translate(30px, -25px) scale(1.06); }
-      66% { transform: translate(-20px, 20px) scale(0.95); }
+    .btn-museum-primary:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
     }
 
-    .ambient-orb {
-      animation: floatSlow 14s ease-in-out infinite;
+    /* Sárgaréz szegélyes másodlagos gomb */
+    .btn-museum-brass {
+      background: linear-gradient(180deg, #FFFDF9 0%, #F2ECE0 100%);
+      color: #1B1917;
+      border: 1px solid #C29B48;
+      box-shadow: 0 4px 12px rgba(27, 25, 23, 0.06);
+      transition: all 0.2s ease;
     }
 
-    /* Üveg pörgetés animációk */
-    @keyframes mysterySpin {
-      0% { transform: rotate(0deg) scale(1); }
-      25% { transform: rotate(540deg) scale(1.08); }
-      60% { transform: rotate(1260deg) scale(1.04); }
-      100% { transform: rotate(1800deg) scale(1); }
+    .btn-museum-brass:hover:not(:disabled) {
+      background: linear-gradient(180deg, #FAF3E3 0%, #EADFC7 100%);
+      border-color: #9A7830;
+      transform: translateY(-1px);
     }
 
-    .bottle-spinning {
-      animation: mysterySpin 2.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    /* =========================================================================
+       DÍSZES KÉPKERET (ORNATE GALLERY FRAME) & PASZPARTU (MATBOARD)
+       ========================================================================= */
+    .gallery-wall-stage {
+      background:
+        radial-gradient(ellipse 68% 58% at 50% 8%, rgba(255, 245, 214, 0.95) 0%, rgba(236, 231, 221, 0.4) 55%, rgba(214, 207, 194, 0.65) 100%);
+      border: 1px solid rgba(194, 155, 72, 0.35);
+      box-shadow: inset 0 0 60px rgba(27, 25, 23, 0.08);
     }
 
-    .bottle-reveal-transition {
-      transition: transform 1.55s cubic-bezier(0.14, 0.88, 0.24, 1);
+    /* Mennyezeti galérialámpa fénycsóva */
+    .gallery-spotlight-beam {
+      background: conic-gradient(from 152deg at 50% -8%, transparent 0deg, rgba(255, 243, 205, 0.58) 28deg, transparent 56deg);
+      pointer-events: none;
+      transition: opacity 0.9s ease;
     }
 
-    @keyframes pulseRing {
-      0% { transform: scale(0.92); opacity: 0.85; }
-      70% { transform: scale(1.25); opacity: 0; }
-      100% { transform: scale(1.25); opacity: 0; }
+    /* Többrétegű antik arany és sötét diófa képkeret */
+    .ornate-frame {
+      padding: 12px;
+      background: linear-gradient(145deg, #D8B768 0%, #9A7830 28%, #5C4318 52%, #C29B48 78%, #856522 100%);
+      border-radius: 6px;
+      box-shadow:
+        0 26px 50px -12px rgba(27, 25, 23, 0.42),
+        0 10px 20px -6px rgba(27, 25, 23, 0.25),
+        inset 0 2px 3px rgba(255, 248, 220, 0.7),
+        inset 0 -2px 4px rgba(42, 30, 10, 0.8);
+      position: relative;
     }
 
-    .pulse-ring::before {
-      content: '';
-      position: absolute;
-      inset: -8px;
-      border-radius: 9999px;
-      border: 2px solid #f59e0b;
-      animation: pulseRing 1.6s infinite;
+    @media (min-width: 640px) {
+      .ornate-frame {
+        padding: 18px;
+      }
     }
 
-    /* Konfetti animáció */
-    @keyframes confettiFall {
-      0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
-      100% { transform: translateY(105vh) rotate(720deg); opacity: 0; }
+    /* Belső sötét fa + arany filé szegély */
+    .ornate-frame-inner {
+      padding: 6px;
+      background: #2C2218;
+      border: 2px solid #E5CE94;
+      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.75);
     }
 
-    .confetti-piece {
+    /* Törtfehér múzeumi paszpartu (Matboard) */
+    .museum-matboard {
+      padding: 14px;
+      background: #FAF8F5;
+      box-shadow:
+        inset 0 0 0 1px #E2DDD2,
+        inset 0 4px 14px rgba(27, 25, 23, 0.14);
+    }
+
+    @media (min-width: 640px) {
+      .museum-matboard {
+        padding: 24px;
+      }
+    }
+
+    /* Műtárgy mélyített nyílása */
+    .artwork-recess {
+      box-shadow:
+        inset 0 3px 10px rgba(27, 25, 23, 0.35),
+        0 1px 0 rgba(255, 255, 255, 0.9);
+      border: 1px solid #D6CFC2;
+      background: #141210;
+    }
+
+    /* =========================================================================
+       BÁRSONYFÜGGÖNY / VÁSZONLEPEL FELLEBBENTÉSE (VELVET CURTAIN REVEAL)
+       ========================================================================= */
+    .velvet-curtain-panel {
+      background:
+        repeating-linear-gradient(
+          90deg,
+          #4A1616 0px,
+          #6E2626 18px,
+          #3B1010 36px,
+          #6E2626 54px
+        );
+      box-shadow: inset 0 0 35px rgba(0, 0, 0, 0.65);
+      transition: transform 1.15s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.9s ease;
+    }
+
+    .curtain-closed-left {
+      transform: translateX(0%);
+    }
+    .curtain-closed-right {
+      transform: translateX(0%);
+    }
+
+    .curtain-open-left {
+      transform: translateX(-103%);
+    }
+    .curtain-open-right {
+      transform: translateX(103%);
+    }
+
+    /* =========================================================================
+       3D MÚZEUMI KATALÓGUSCÉDULA (PLACARD FLIP ANIMÁCIÓ)
+       ========================================================================= */
+    .placard-scene {
+      perspective: 1200px;
+    }
+
+    .placard-card {
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.95s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .placard-card.is-flipped {
+      transform: rotateY(180deg);
+    }
+
+    .placard-face {
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+
+    .placard-back {
+      transform: rotateY(180deg);
+    }
+
+    /* Aranyozott viaszpecsét / díszítés */
+    .brass-seal {
+      background: radial-gradient(circle at 30% 30%, #F3DFAC 0%, #C29B48 55%, #8A6924 100%);
+      box-shadow: 0 4px 10px rgba(138, 105, 36, 0.35), inset 0 1px 2px rgba(255, 255, 255, 0.7);
+    }
+
+    /* Finom lebegő porszem / fénycsillanás animáció a reflektorfényben */
+    @keyframes galleryFloat {
+      0%, 100% { transform: translateY(0px); opacity: 0.45; }
+      50% { transform: translateY(-8px); opacity: 0.85; }
+    }
+
+    .spotlight-dust {
+      animation: galleryFloat 4.5s ease-in-out infinite;
+    }
+
+    /* Ünnepi aranylevél hullás a Záró Gálán */
+    @keyframes goldLeafFall {
+      0% { transform: translateY(-10vh) rotate(0deg) scale(1); opacity: 1; }
+      100% { transform: translateY(105vh) rotate(540deg) scale(0.8); opacity: 0; }
+    }
+
+    .gold-leaf-piece {
       position: fixed;
       top: -20px;
       z-index: 9999;
       pointer-events: none;
-      animation: confettiFall linear forwards;
+      animation: goldLeafFall linear forwards;
     }
 
-    /* Egyedi scrollbar */
+    /* Egyedi elegáns görgetősáv */
     ::-webkit-scrollbar {
       width: 6px;
       height: 6px;
     }
     ::-webkit-scrollbar-track {
-      background: rgba(15, 10, 30, 0.5);
+      background: #ECE7DD;
     }
     ::-webkit-scrollbar-thumb {
-      background: rgba(168, 85, 247, 0.4);
+      background: #C29B48;
       border-radius: 9999px;
     }
   </style>
 </head>
-<body class="relative selection:bg-pink-500 selection:text-white">
+<body class="selection:bg-[#6E2626] selection:text-[#FAF8F5]">
 
-  <!-- Háttér dekorációs fénygömbök -->
-  <div class="fixed inset-0 overflow-hidden pointer-events-none -z-10">
-    <div class="ambient-orb absolute -top-24 -left-24 w-96 h-96 rounded-full bg-purple-600/20 blur-[110px]"></div>
-    <div class="ambient-orb absolute top-1/3 -right-24 w-[28rem] h-[28rem] rounded-full bg-pink-600/20 blur-[120px]" style="animation-delay: -4s;"></div>
-    <div class="ambient-orb absolute -bottom-28 left-1/3 w-96 h-96 rounded-full bg-amber-500/15 blur-[110px]" style="animation-delay: -8s;"></div>
-  </div>
-
-  <!-- Toast értesítések konténere -->
+  <!-- Értesítési (Toast) sáv -->
   <div id="toast-container" class="fixed top-20 right-4 left-4 sm:left-auto sm:w-96 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
-  <!-- Kép nagyító (Lightbox) modális ablak -->
-  <div id="lightbox-modal" class="fixed inset-0 z-50 hidden bg-black/90 backdrop-blur-md flex items-center justify-center p-4" onclick="closeLightbox()">
-    <button type="button" onclick="closeLightbox()" class="absolute top-4 right-4 w-11 h-11 rounded-full glass-pill flex items-center justify-center text-white text-xl hover:bg-white/20 transition">
-      ✕
-    </button>
-    <img id="lightbox-img" src="" alt="Nagyított kép" class="max-w-full max-h-[88dvh] rounded-2xl shadow-2xl object-contain" onclick="event.stopPropagation()" />
+  <!-- Kurátori Nagyító / Közelkép (Lightbox) modális ablak -->
+  <div id="lightbox-modal" class="fixed inset-0 z-50 hidden bg-[#141210]/95 backdrop-blur-md flex flex-col items-center justify-center p-4" onclick="closeLightbox()">
+    <div class="w-full max-w-5xl flex items-center justify-between mb-3 px-2" onclick="event.stopPropagation()">
+      <div class="flex items-center gap-2 text-[#E5CE94]">
+        <span class="text-lg">🔍</span>
+        <span class="font-serif-display font-bold text-base sm:text-lg tracking-wide">Kurátori Nagyító — Részletvizsgálat</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <button type="button" id="btn-lightbox-zoom-toggle" onclick="toggleLightboxZoom()" class="px-3.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-[#FAF8F5] border border-[#C29B48]/50 text-xs font-semibold transition">
+          🔎 2× Nagyítás
+        </button>
+        <button type="button" onclick="closeLightbox()" class="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white border border-white/20 flex items-center justify-center text-lg transition" title="Bezárás">
+          ✕
+        </button>
+      </div>
+    </div>
+
+    <div id="lightbox-scroll-container" class="max-w-full max-h-[82dvh] overflow-auto rounded-lg border-4 border-[#9A7830] bg-black shadow-2xl flex items-center justify-center" onclick="event.stopPropagation()">
+      <img id="lightbox-img" src="" alt="Nagyított műalkotás" onclick="toggleLightboxZoom()" class="max-w-full max-h-[80dvh] object-contain cursor-zoom-in transition-transform duration-300 origin-center" />
+    </div>
+    <p class="text-xs text-stone-400 mt-2.5">Kattints a képre a nagyításhoz, vagy bárhová mellé a bezáráshoz.</p>
   </div>
 
-  <!-- Egyedi megerősítő / információs modális ablak (alert/confirm helyett) -->
-  <div id="custom-modal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="glass-card rounded-3xl max-w-md w-full p-6 border border-purple-500/30 text-center">
-      <div id="modal-icon" class="text-4xl mb-3">⚠️</div>
-      <h3 id="modal-title" class="text-xl font-bold text-white mb-2">Figyelem</h3>
-      <p id="modal-message" class="text-slate-300 text-sm leading-relaxed mb-6"></p>
+  <!-- Egyedi múzeumi megerősítő / információs modális ablak -->
+  <div id="custom-modal" class="fixed inset-0 z-50 hidden bg-[#1B1917]/75 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="museum-card rounded-2xl max-w-md w-full p-6 sm:p-7 border-2 border-[#C29B48] text-center">
+      <div id="modal-icon" class="text-4xl mb-3">🏛️</div>
+      <h3 id="modal-title" class="text-2xl font-serif-display font-bold text-[#1B1917] mb-2">Közlemény</h3>
+      <p id="modal-message" class="text-[#57534E] text-sm leading-relaxed mb-6"></p>
       <div id="modal-actions" class="flex flex-wrap gap-3 justify-center"></div>
     </div>
   </div>
 
-  <!-- Felső navigációs sáv -->
-  <header class="sticky top-0 z-40 border-b border-white/10 bg-[#090612]/80 backdrop-blur-xl">
+  <!-- ======================================================================= -->
+  <!-- FELSŐ MÚZEUMI NAVIGÁCIÓS SÁV                                            -->
+  <!-- ======================================================================= -->
+  <header class="sticky top-0 z-40 border-b border-[#C29B48]/40 bg-[#FAF8F5]/95 backdrop-blur-md shadow-sm">
     <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-2">
-      <div class="flex items-center gap-2.5 cursor-pointer" onclick="handleLogoClick()">
-        <div class="w-10 h-10 rounded-2xl btn-gradient flex items-center justify-center text-xl shadow-lg">
-          🍾
+      <!-- Logó és cím -->
+      <div class="flex items-center gap-3 cursor-pointer group" onclick="handleLogoClick()">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#6E2626] to-[#4A1616] border border-[#C29B48] flex items-center justify-center text-lg text-[#E5CE94] shadow-sm group-hover:scale-105 transition-transform">
+          🏛️
         </div>
         <div>
-          <span class="font-display font-extrabold text-lg sm:text-xl tracking-tight bg-gradient-to-r from-purple-300 via-pink-300 to-amber-300 bg-clip-text text-transparent">
-            Kinek a képe?
-          </span>
-          <span class="hidden sm:inline-block ml-2 text-[11px] uppercase tracking-widest px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 border border-purple-500/30">
-            Spin &amp; Guess
-          </span>
+          <div class="flex items-center gap-2">
+            <span class="font-serif-display font-extrabold text-lg sm:text-xl tracking-tight text-[#1B1917]">
+              A Tárlat
+            </span>
+            <span class="hidden sm:inline-block text-xs font-garamond italic font-semibold text-[#6E2626] border-l border-[#C29B48]/50 pl-2">
+              Kinek a műve?
+            </span>
+          </div>
+          <p class="text-[10px] uppercase tracking-[0.2em] text-[#9A7830] font-semibold hidden sm:block">
+            Privát Képgaléria &amp; Kiállítás
+          </p>
         </div>
       </div>
 
+      <!-- Jobb oldali vezérlők -->
       <div class="flex items-center gap-2 sm:gap-3">
-        <!-- Aktív szobakód jelvény -->
-        <button id="header-room-badge" type="button" onclick="copyInviteLink()" class="hidden glass-pill hover:bg-white/10 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold text-amber-300 flex items-center gap-1.5 transition" title="Meghívó link másolása">
-          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          <span>Szoba: <strong id="header-room-code" class="tracking-wider">----</strong></span>
-          <span class="text-slate-400">📋</span>
+        <!-- Teremkód jelvény -->
+        <button id="header-room-badge" type="button" onclick="copyInviteLink()" class="hidden btn-museum-brass px-3 py-1.5 rounded-xl text-xs sm:text-sm font-semibold text-[#1B1917] flex items-center gap-1.5" title="Meghívó link másolása">
+          <span class="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
+          <span>Terem: <strong id="header-room-code" class="font-serif-display tracking-wider text-[#6E2626]">----</strong></span>
+          <span class="text-[#9A7830]">📋</span>
         </button>
 
-        <!-- Hang némítása / visszakapcsolása -->
-        <button id="btn-mute" type="button" onclick="toggleMute()" class="w-10 h-10 rounded-xl glass-pill hover:bg-white/10 flex items-center justify-center text-lg transition" title="Hangeffektek ki/be">
+        <!-- Galériás hangok ki/be -->
+        <button id="btn-mute" type="button" onclick="toggleMute()" class="w-10 h-10 rounded-xl btn-museum-brass flex items-center justify-center text-base" title="Galériás hangeffektek ki/be">
           🔊
         </button>
 
-        <!-- Kilépés a szobából -->
-        <button id="btn-leave-room" type="button" onclick="confirmLeaveRoom()" class="hidden px-3 py-2 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-rose-300 text-xs sm:text-sm font-semibold transition">
+        <!-- Kilépés a kiállításból -->
+        <button id="btn-leave-room" type="button" onclick="confirmLeaveRoom()" class="hidden px-3 py-2 rounded-xl bg-[#6E2626]/10 hover:bg-[#6E2626]/20 border border-[#6E2626]/30 text-[#6E2626] text-xs sm:text-sm font-semibold transition">
           Kilépés
         </button>
       </div>
     </div>
   </header>
 
-  <!-- FŐ TARTALOM -->
+  <!-- ======================================================================= -->
+  <!-- FŐ TARTALMI TERÜLET                                                     -->
+  <!-- ======================================================================= -->
   <main class="max-w-6xl mx-auto px-4 py-6 sm:py-10">
 
     <!-- ===================================================================== -->
-    <!-- 1. NÉZET: FŐOLDAL (PROFIL, SZOBA LÉTREHOZÁSA / CSATLAKOZÁS / TESZT MÓD) -->
+    <!-- 1. NÉZET: MÚZEUMI ELŐCSARNOK (KEZDŐKÉPERNYŐ)                          -->
     <!-- ===================================================================== -->
     <section id="view-home" class="max-w-xl mx-auto space-y-6">
-      <!-- Hero fejléc -->
+      <!-- Klasszikus kiállítási fejléc -->
       <div class="text-center space-y-3">
-        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full glass-pill text-xs font-medium text-pink-300 border border-pink-500/30">
-          <span>🔒 P2P Privát Partijáték</span>
-          <span>•</span>
-          <span>📱 Mobil &amp; 💻 PC</span>
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#FAF8F5] border border-[#C29B48]/50 text-xs font-semibold text-[#6E2626] shadow-sm">
+          <span>🖼️ Privát P2P Tárlat</span>
+          <span class="text-[#C29B48]">•</span>
+          <span>📱 Mobil &amp; 💻 Asztali gép</span>
         </div>
-        <h1 class="text-3xl sm:text-5xl font-black tracking-tight text-white leading-tight">
-          Pörgesd meg az üveget,<br />
-          <span class="bg-gradient-to-r from-purple-400 via-pink-400 to-amber-400 bg-clip-text text-transparent">
-            tippeld meg, kié a kép!
-          </span>
+
+        <h1 class="text-3xl sm:text-5xl font-serif-display font-extrabold tracking-tight text-[#1B1917] leading-tight">
+          A Tárlat<br />
+          <span class="italic font-semibold text-[#6E2626]">Kinek a műve?</span>
         </h1>
-        <p class="text-slate-400 text-sm sm:text-base max-w-md mx-auto">
-          Csatlakoztass egy mappát vagy válassz képeket/videókat a galériádból. Az üveg véletlenszerűen kisorsol valakit, nektek pedig ki kell találnotok, kitől származik a felvétel!
+
+        <p class="text-[#57534E] text-sm sm:text-base max-w-md mx-auto leading-relaxed">
+          Csatolj egy mappát vagy válogass képeket és videókat a telefonod galériájából. A kurátor titokban kiállít egy-egy alkotást — nektek pedig ki kell nyomoznotok, kié a mű!
         </p>
       </div>
 
-      <!-- Profil beállítása (Név + Avatar) -->
-      <div class="glass-card rounded-3xl p-5 sm:p-6 space-y-5">
+      <!-- Művész névjegye (Név + Múzeumi Embléma) -->
+      <div class="museum-card rounded-2xl p-5 sm:p-6 space-y-5">
         <div>
-          <label for="input-player-name" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
-            1. Beceneved
+          <label for="input-player-name" class="block text-xs font-bold uppercase tracking-[0.15em] text-[#9A7830] mb-2">
+            I. Kiállító művész neve
           </label>
           <input
             id="input-player-name"
             type="text"
-            maxlength="18"
-            placeholder="Pl. Bence, Zsófi, KépMester..."
-            class="w-full px-4 py-3.5 rounded-2xl bg-slate-950/70 border border-white/10 focus:border-pink-500 focus:ring-2 focus:ring-pink-500/30 outline-none text-white font-medium placeholder:text-slate-500 transition"
+            maxlength="20"
+            placeholder="Pl. Kovács Eszter, Bence, Műértő..."
+            class="w-full px-4 py-3.5 rounded-xl bg-[#FAF8F5] border border-[#C29B48]/50 focus:border-[#6E2626] focus:ring-2 focus:ring-[#6E2626]/15 outline-none text-[#1B1917] font-medium placeholder:text-stone-400 transition"
           />
         </div>
 
         <div>
-          <span class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
-            2. Válassz avatart
+          <span class="block text-xs font-bold uppercase tracking-[0.15em] text-[#9A7830] mb-2">
+            II. Kurátori pecsét / Embléma
           </span>
           <div id="avatar-picker" class="grid grid-cols-8 gap-2">
-            <!-- JS tölti fel emoji avatarokkal -->
+            <!-- JS tölti fel klasszikus művészeti/galériás szimbólumokkal -->
           </div>
         </div>
       </div>
 
-      <!-- Szoba műveletek kártya -->
-      <div class="glass-card rounded-3xl p-5 sm:p-6 space-y-5">
-        <!-- Fülváltó: Új szoba vs Csatlakozás -->
-        <div class="grid grid-cols-2 p-1 rounded-2xl bg-slate-950/70 border border-white/10">
-          <button id="tab-create" type="button" onclick="switchHomeTab('create')" class="py-2.5 rounded-xl text-sm font-bold transition bg-purple-600 text-white shadow-lg">
-            ✨ Új szoba
+      <!-- Kiállítóterem megnyitása vagy belépés -->
+      <div class="museum-card rounded-2xl p-5 sm:p-6 space-y-5">
+        <div class="grid grid-cols-2 p-1 rounded-xl museum-inset">
+          <button id="tab-create" type="button" onclick="switchHomeTab('create')" class="py-2.5 rounded-lg text-sm font-bold transition bg-[#6E2626] text-[#FAF8F5] shadow">
+            🏛️ Új kiállítás
           </button>
-          <button id="tab-join" type="button" onclick="switchHomeTab('join')" class="py-2.5 rounded-xl text-sm font-bold text-slate-400 hover:text-white transition">
-            🔑 Csatlakozás
+          <button id="tab-join" type="button" onclick="switchHomeTab('join')" class="py-2.5 rounded-lg text-sm font-bold text-[#57534E] hover:text-[#1B1917] transition">
+            🎟️ Belépés kóddal
           </button>
         </div>
 
-        <!-- Új szoba panel -->
+        <!-- Új kiállítás létrehozása -->
         <div id="panel-create" class="space-y-4">
-          <p class="text-xs text-slate-400 leading-relaxed">
-            Hozz létre egy privát szobát, oszd meg a meghívó linket a barátaiddal, és állítsd be a játékszabályokat!
+          <p class="text-xs text-[#57534E] leading-relaxed">
+            Nyiss meg egy privát kiállítótermet, küldd el a meghívót a barátaidnak, és kurátorként szabd meg a tárlat szabályait!
           </p>
-          <button id="btn-create-room" type="button" onclick="createRoom()" class="w-full py-4 rounded-2xl btn-gradient text-white font-display font-bold text-lg shadow-xl flex items-center justify-center gap-2">
-            <span>🚀 Szoba létrehozása</span>
+          <button id="btn-create-room" type="button" onclick="createRoom()" class="w-full py-4 rounded-xl btn-museum-primary font-serif-display font-bold text-lg flex items-center justify-center gap-2">
+            <span>✨ Kiállítás megnyitása</span>
           </button>
         </div>
 
-        <!-- Csatlakozás panel -->
+        <!-- Belépés meglévő terembe -->
         <div id="panel-join" class="hidden space-y-4">
           <div>
-            <label for="input-room-code" class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
-              Szobakód megadása
+            <label for="input-room-code" class="block text-xs font-bold uppercase tracking-[0.15em] text-[#9A7830] mb-2">
+              Kiállítóterem kódja
             </label>
             <input
               id="input-room-code"
               type="text"
               maxlength="8"
-              placeholder="PL. A7X9"
-              class="w-full px-4 py-3.5 rounded-2xl bg-slate-950/70 border border-white/10 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/30 outline-none text-white font-display font-extrabold text-xl tracking-[0.25em] text-center uppercase placeholder:text-slate-600 placeholder:tracking-normal placeholder:font-sans placeholder:text-base transition"
+              placeholder="PL. M7K9A"
+              class="w-full px-4 py-3.5 rounded-xl bg-[#FAF8F5] border border-[#C29B48]/60 focus:border-[#6E2626] focus:ring-2 focus:ring-[#6E2626]/15 outline-none text-[#1B1917] font-serif-display font-extrabold text-xl tracking-[0.25em] text-center uppercase placeholder:text-stone-400 placeholder:tracking-normal placeholder:font-sans placeholder:text-base transition"
             />
           </div>
-          <button id="btn-join-room" type="button" onclick="joinRoom()" class="w-full py-4 rounded-2xl bg-gradient-to-r from-amber-500 to-pink-600 hover:from-amber-400 hover:to-pink-500 text-white font-display font-bold text-lg shadow-xl transition flex items-center justify-center gap-2">
-            <span>🎯 Csatlakozás a szobához</span>
+          <button id="btn-join-room" type="button" onclick="joinRoom()" class="w-full py-4 rounded-xl btn-museum-primary font-serif-display font-bold text-lg flex items-center justify-center gap-2">
+            <span>🎟️ Belépés a tárlatra</span>
           </button>
         </div>
 
         <!-- Elválasztó -->
         <div class="relative flex py-1 items-center">
-          <div class="flex-grow border-t border-white/10"></div>
-          <span class="flex-shrink mx-3 text-xs uppercase tracking-widest text-slate-500">vagy próbáld ki egyedül</span>
-          <div class="flex-grow border-t border-white/10"></div>
+          <div class="flex-grow border-t border-[#C29B48]/30"></div>
+          <span class="flex-shrink mx-3 text-[11px] uppercase tracking-[0.18em] text-[#9A7830] font-semibold">vagy egyéni próba</span>
+          <div class="flex-grow border-t border-[#C29B48]/30"></div>
         </div>
 
-        <!-- Teszt mód (Botokkal) gomb -->
-        <button id="btn-bot-mode" type="button" onclick="startBotTestMode()" class="w-full py-3.5 px-4 rounded-2xl glass-pill hover:bg-white/10 border border-cyan-500/30 text-cyan-300 font-semibold text-sm sm:text-base flex items-center justify-center gap-2.5 transition">
-          <span class="text-xl">🤖</span>
-          <span>Teszt mód (Botokkal &amp; Demo médiával)</span>
+        <!-- Tárlatvezetés Teszt Mód -->
+        <button id="btn-bot-mode" type="button" onclick="startBotTestMode()" class="w-full py-3.5 px-4 rounded-xl btn-museum-brass font-semibold text-sm sm:text-base flex items-center justify-center gap-2.5">
+          <span class="text-xl">🎭</span>
+          <span>Tárlatvezetés Teszt Mód (AI művészekkel)</span>
         </button>
       </div>
     </section>
 
     <!-- ===================================================================== -->
-    <!-- 2. NÉZET: ELŐCSARNOK (LOBBY - MÉDIA HOZZÁADÁSA, BEÁLLÍTÁSOK, JÁTÉKOSOK) -->
+    <!-- 2. NÉZET: KURÁTORI ELŐKÉSZÍTŐ (LOBBY)                                 -->
     <!-- ===================================================================== -->
     <section id="view-lobby" class="hidden space-y-6">
-      <!-- Meghívó sáv -->
-      <div class="glass-card rounded-3xl p-4 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4 border border-purple-500/25">
+      <!-- Meghívó szalag -->
+      <div class="museum-card rounded-2xl p-4 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4 border-l-4 border-l-[#6E2626]">
         <div class="text-center sm:text-left">
           <div class="flex items-center justify-center sm:justify-start gap-2">
-            <span class="text-xs uppercase tracking-widest text-purple-300 font-bold">Szobakód</span>
-            <span id="lobby-mode-badge" class="text-[11px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-              P2P Élő
+            <span class="text-xs uppercase tracking-[0.18em] text-[#9A7830] font-bold">Kiállítóterem kódja</span>
+            <span id="lobby-mode-badge" class="text-[11px] px-2.5 py-0.5 rounded-full bg-emerald-900/10 text-emerald-800 border border-emerald-700/25 font-semibold">
+              🌐 P2P Élő Tárlat
             </span>
           </div>
-          <div class="flex items-center justify-center sm:justify-start gap-3 mt-1">
-            <span id="lobby-room-code" class="font-display font-black text-3xl sm:text-4xl tracking-[0.2em] text-white">----</span>
+          <div class="mt-1">
+            <span id="lobby-room-code" class="font-serif-display font-black text-3xl sm:text-4xl tracking-[0.2em] text-[#1B1917]">----</span>
           </div>
-          <p class="text-xs text-slate-400 mt-1">Oszd meg a linket, és a barátaid egy kattintással beléphetnek!</p>
+          <p class="text-xs text-[#57534E] mt-1">Oszd meg a meghívót a vendégekkel — a link automatikusan belépteti őket a terembe.</p>
         </div>
 
-        <button type="button" onclick="copyInviteLink()" class="w-full sm:w-auto px-5 py-3.5 rounded-2xl bg-purple-600/30 hover:bg-purple-600/45 border border-purple-400/40 text-purple-100 font-semibold text-sm flex items-center justify-center gap-2 transition">
+        <button type="button" onclick="copyInviteLink()" class="w-full sm:w-auto px-5 py-3.5 rounded-xl btn-museum-brass font-semibold text-sm flex items-center justify-center gap-2">
           <span>🔗 Meghívó link másolása</span>
         </button>
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <!-- Bal oszlop: Saját média hozzákötése + Játék beállítások -->
+        <!-- Bal oszlop: Saját gyűjtemény csatolása + Kurátori szabályok -->
         <div class="lg:col-span-7 space-y-6">
 
-          <!-- Média kiválasztása kártya -->
-          <div class="glass-card rounded-3xl p-5 sm:p-6 space-y-4">
+          <!-- Saját gyűjtemény / Mappa csatolása -->
+          <div class="museum-card rounded-2xl p-5 sm:p-6 space-y-4">
             <div class="flex items-start justify-between gap-3">
               <div>
-                <h2 class="text-xl font-bold text-white flex items-center gap-2">
-                  <span>📂 Saját média hozzákötése</span>
+                <h2 class="text-xl sm:text-2xl font-serif-display font-bold text-[#1B1917] flex items-center gap-2">
+                  <span>📂 Saját gyűjtemény csatolása</span>
                 </h2>
-                <p class="text-xs text-slate-400 mt-1">
-                  Válassz egy teljes mappát gépen, vagy jelölj ki képeket/videókat a telefonod galériájából.
+                <p class="text-xs text-[#57534E] mt-1">
+                  Jelölj ki egy teljes mappát a gépeden, vagy válogass fotókat és videókat a telefonod galériájából.
                 </p>
               </div>
-              <button type="button" onclick="clearLocalMedia()" id="btn-clear-media" class="hidden text-xs px-2.5 py-1.5 rounded-xl bg-white/5 hover:bg-rose-500/20 text-slate-400 hover:text-rose-300 transition">
-                Törlés
+              <button type="button" onclick="clearLocalMedia()" id="btn-clear-media" class="hidden text-xs px-3 py-1.5 rounded-lg bg-[#6E2626]/10 hover:bg-[#6E2626]/20 text-[#6E2626] font-semibold transition">
+                Gyűjtemény ürítése
               </button>
             </div>
 
-            <!-- Adatvédelmi tájékoztató doboz -->
-            <div class="p-3.5 rounded-2xl bg-emerald-950/40 border border-emerald-500/25 flex items-start gap-3">
-              <span class="text-lg mt-0.5">🛡️</span>
-              <p class="text-xs text-emerald-200/90 leading-relaxed">
-                <strong>100% Privát adatkezelés:</strong> A kiválasztott fájlok a te eszközödön maradnak. Kizárólag az adott körben véletlenszerűen kisorsolt <strong>1 db kép vagy videó</strong> kerül átküldésre (a képek automatikusan átméreteződnek max. 1200px-re, videóknál max. 15 MB).
+            <!-- Diszkréciós garancia -->
+            <div class="p-3.5 rounded-xl bg-[#ECE7DD] border border-[#C29B48]/40 flex items-start gap-3">
+              <span class="text-lg mt-0.5">🔒</span>
+              <p class="text-xs text-[#1B1917]/85 leading-relaxed">
+                <strong>Teljes diszkréció:</strong> A mappád tartalma kizárólag a te eszközödön marad. Amikor a kurátor titokban kisorsol téged, csak <strong>1 db véletlenszerű alkotásod</strong> kerül kiállításra (fotók max. 1200px-re optimalizálva, videók max. 15 MB).
               </p>
             </div>
 
-            <!-- Két fájlbetöltő gomb (PC mappa + Mobil galéria) -->
+            <!-- Két fájlválasztó gomb -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <!-- Rejtett inputok -->
               <input id="input-folder" type="file" webkitdirectory directory multiple class="hidden" onchange="handleFilesSelected(this.files, 'folder')" />
               <input id="input-gallery" type="file" accept="image/*,video/*" multiple class="hidden" onchange="handleFilesSelected(this.files, 'gallery')" />
 
-              <button type="button" onclick="document.getElementById('input-folder').click()" class="p-4 rounded-2xl bg-gradient-to-br from-purple-600/25 to-purple-900/25 hover:from-purple-600/35 hover:to-purple-900/35 border border-purple-500/35 text-left transition group">
+              <button type="button" onclick="document.getElementById('input-folder').click()" class="p-4 rounded-xl bg-[#FAF8F5] hover:bg-[#F3EDE0] border border-[#C29B48]/60 text-left transition group shadow-sm">
                 <div class="text-2xl mb-1.5 group-hover:scale-110 transition-transform inline-block">📁</div>
-                <div class="font-bold text-sm text-white">Mappa kiválasztása</div>
-                <div class="text-[11px] text-purple-300/80 mt-0.5">Számítógépre (teljes könyvtár)</div>
+                <div class="font-bold text-sm text-[#1B1917]">Mappa csatolása (PC)</div>
+                <div class="text-[11px] text-[#57534E] mt-0.5">Teljes könyvtár beolvasása</div>
               </button>
 
-              <button type="button" onclick="document.getElementById('input-gallery').click()" class="p-4 rounded-2xl bg-gradient-to-br from-pink-600/25 to-amber-900/25 hover:from-pink-600/35 hover:to-amber-900/35 border border-pink-500/35 text-left transition group">
+              <button type="button" onclick="document.getElementById('input-gallery').click()" class="p-4 rounded-xl bg-[#FAF8F5] hover:bg-[#F3EDE0] border border-[#6E2626]/40 text-left transition group shadow-sm">
                 <div class="text-2xl mb-1.5 group-hover:scale-110 transition-transform inline-block">📱</div>
-                <div class="font-bold text-sm text-white">Képek / Videók kijelölése</div>
-                <div class="text-[11px] text-pink-300/80 mt-0.5">Telefonra (iOS / Android galéria)</div>
+                <div class="font-bold text-sm text-[#1B1917]">Galéria megnyitása (Mobil / Fájlok)</div>
+                <div class="text-[11px] text-[#57534E] mt-0.5">Képek és videók többes kijelölése</div>
               </button>
             </div>
 
-            <!-- Betöltött fájlok számlálója + gyors minta gomb -->
-            <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-white/10">
+            <!-- Betöltött művek számlálója + Minta gyűjtemény gomb -->
+            <div class="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-[#C29B48]/25">
               <div class="flex items-center gap-3">
-                <div class="px-3.5 py-2 rounded-xl bg-slate-950/70 border border-white/10 flex items-center gap-2">
+                <div class="px-3.5 py-2 rounded-xl museum-inset flex items-center gap-2">
                   <span>🖼️</span>
-                  <span class="text-xs text-slate-400">Képek:</span>
-                  <strong id="local-image-count" class="text-white font-display text-base">0</strong>
+                  <span class="text-xs text-[#57534E]">Képek:</span>
+                  <strong id="local-image-count" class="text-[#1B1917] font-serif-display text-base">0</strong>
                 </div>
-                <div class="px-3.5 py-2 rounded-xl bg-slate-950/70 border border-white/10 flex items-center gap-2">
-                  <span>🎬</span>
-                  <span class="text-xs text-slate-400">Videók:</span>
-                  <strong id="local-video-count" class="text-white font-display text-base">0</strong>
+                <div class="px-3.5 py-2 rounded-xl museum-inset flex items-center gap-2">
+                  <span>🎞️</span>
+                  <span class="text-xs text-[#57534E]">Videók:</span>
+                  <strong id="local-video-count" class="text-[#1B1917] font-serif-display text-base">0</strong>
                 </div>
               </div>
 
-              <button type="button" onclick="addDemoMediaToLocalUser()" class="text-xs px-3 py-2 rounded-xl glass-pill hover:bg-white/10 text-amber-300 font-medium transition">
-                ✨ +3 minta kép/videó hozzáadása
+              <button type="button" onclick="addDemoMediaToLocalUser()" class="text-xs px-3.5 py-2 rounded-xl btn-museum-brass text-[#6E2626] font-semibold">
+                ✨ +3 minta alkotás hozzáadása
               </button>
             </div>
           </div>
 
-          <!-- Játék beállítások panel -->
-          <div class="glass-card rounded-3xl p-5 sm:p-6 space-y-5">
+          <!-- Kiállítási szabályok (Kurátor / Hoszt állítja) -->
+          <div class="museum-card rounded-2xl p-5 sm:p-6 space-y-5">
             <div class="flex items-center justify-between">
-              <h2 class="text-xl font-bold text-white flex items-center gap-2">
-                <span>⚙️ Játék beállítások</span>
+              <h2 class="text-xl sm:text-2xl font-serif-display font-bold text-[#1B1917] flex items-center gap-2">
+                <span>⚖️ Kiállítási szabályok</span>
               </h2>
-              <span id="settings-lock-badge" class="text-xs px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                👑 Szobagazda állítja
+              <span id="settings-lock-badge" class="text-xs px-3 py-1 rounded-full bg-[#C29B48]/20 text-[#9A7830] border border-[#C29B48]/40 font-semibold">
+                👑 Kurátor állítja
               </span>
             </div>
 
-            <!-- 1. Média típusa -->
+            <!-- 1. Kiállított média típusa -->
             <div class="space-y-2">
-              <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400">
-                Kisorsolt média típusa
+              <label class="block text-xs font-bold uppercase tracking-[0.14em] text-[#57534E]">
+                Kiállított alkotások típusa
               </label>
               <div class="grid grid-cols-3 gap-2">
-                <button type="button" data-setting="mediaMode" data-value="image" onclick="updateSetting('mediaMode', 'image')" class="setting-btn py-3 px-2 rounded-2xl border text-xs sm:text-sm font-bold transition">
+                <button type="button" data-setting="mediaMode" data-value="image" onclick="updateSetting('mediaMode', 'image')" class="setting-btn py-3 px-2 rounded-xl border text-xs sm:text-sm font-bold transition">
                   🖼️ Csak képek
                 </button>
-                <button type="button" data-setting="mediaMode" data-value="video" onclick="updateSetting('mediaMode', 'video')" class="setting-btn py-3 px-2 rounded-2xl border text-xs sm:text-sm font-bold transition">
-                  🎬 Csak videók
+                <button type="button" data-setting="mediaMode" data-value="video" onclick="updateSetting('mediaMode', 'video')" class="setting-btn py-3 px-2 rounded-xl border text-xs sm:text-sm font-bold transition">
+                  🎞️ Csak videók
                 </button>
-                <button type="button" data-setting="mediaMode" data-value="both" onclick="updateSetting('mediaMode', 'both')" class="setting-btn py-3 px-2 rounded-2xl border text-xs sm:text-sm font-bold transition">
-                  🎭 Mindkettő
+                <button type="button" data-setting="mediaMode" data-value="both" onclick="updateSetting('mediaMode', 'both')" class="setting-btn py-3 px-2 rounded-xl border text-xs sm:text-sm font-bold transition">
+                  🏛️ Mindkettő
                 </button>
               </div>
             </div>
 
-            <!-- 2. Körök száma -->
+            <!-- 2. Tárlat hossza (Körök száma: 3, 5, 8, 10) -->
             <div class="space-y-2">
-              <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400">
-                Körök száma
+              <label class="block text-xs font-bold uppercase tracking-[0.14em] text-[#57534E]">
+                Kiállított művek száma (Körök)
               </label>
               <div class="grid grid-cols-4 gap-2">
-                <button type="button" data-setting="totalRounds" data-value="5" onclick="updateSetting('totalRounds', 5)" class="setting-btn py-2.5 rounded-2xl border text-xs sm:text-sm font-bold transition">
-                  5 kör
+                <button type="button" data-setting="totalRounds" data-value="3" onclick="updateSetting('totalRounds', 3)" class="setting-btn py-2.5 rounded-xl border text-xs sm:text-sm font-bold transition">
+                  3 mű
                 </button>
-                <button type="button" data-setting="totalRounds" data-value="10" onclick="updateSetting('totalRounds', 10)" class="setting-btn py-2.5 rounded-2xl border text-xs sm:text-sm font-bold transition">
-                  10 kör
+                <button type="button" data-setting="totalRounds" data-value="5" onclick="updateSetting('totalRounds', 5)" class="setting-btn py-2.5 rounded-xl border text-xs sm:text-sm font-bold transition">
+                  5 mű
                 </button>
-                <button type="button" data-setting="totalRounds" data-value="15" onclick="updateSetting('totalRounds', 15)" class="setting-btn py-2.5 rounded-2xl border text-xs sm:text-sm font-bold transition">
-                  15 kör
+                <button type="button" data-setting="totalRounds" data-value="8" onclick="updateSetting('totalRounds', 8)" class="setting-btn py-2.5 rounded-xl border text-xs sm:text-sm font-bold transition">
+                  8 mű
                 </button>
-                <button type="button" data-setting="totalRounds" data-value="0" onclick="updateSetting('totalRounds', 0)" class="setting-btn py-2.5 rounded-2xl border text-xs sm:text-sm font-bold transition">
-                  ∞ Végtelen
+                <button type="button" data-setting="totalRounds" data-value="10" onclick="updateSetting('totalRounds', 10)" class="setting-btn py-2.5 rounded-xl border text-xs sm:text-sm font-bold transition">
+                  10 mű
                 </button>
               </div>
             </div>
 
-            <!-- 3. Szavazási idő -->
+            <!-- 3. Szavazási idő (15 mp, 25 mp, 40 mp, 60 mp) -->
             <div class="space-y-2">
-              <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400">
-                Szavazási idő körönként
+              <label class="block text-xs font-bold uppercase tracking-[0.14em] text-[#57534E]">
+                Műelemzési és szavazási idő
               </label>
-              <div class="grid grid-cols-3 gap-2">
-                <button type="button" data-setting="voteTime" data-value="15" onclick="updateSetting('voteTime', 15)" class="setting-btn py-2.5 rounded-2xl border text-xs sm:text-sm font-bold transition">
-                  ⚡ 15 mp
+              <div class="grid grid-cols-4 gap-2">
+                <button type="button" data-setting="voteTime" data-value="15" onclick="updateSetting('voteTime', 15)" class="setting-btn py-2.5 rounded-xl border text-xs sm:text-sm font-bold transition">
+                  15 mp
                 </button>
-                <button type="button" data-setting="voteTime" data-value="20" onclick="updateSetting('voteTime', 20)" class="setting-btn py-2.5 rounded-2xl border text-xs sm:text-sm font-bold transition">
-                  ⏱️ 20 mp
+                <button type="button" data-setting="voteTime" data-value="25" onclick="updateSetting('voteTime', 25)" class="setting-btn py-2.5 rounded-xl border text-xs sm:text-sm font-bold transition">
+                  25 mp
                 </button>
-                <button type="button" data-setting="voteTime" data-value="30" onclick="updateSetting('voteTime', 30)" class="setting-btn py-2.5 rounded-2xl border text-xs sm:text-sm font-bold transition">
-                  🧘 30 mp
+                <button type="button" data-setting="voteTime" data-value="40" onclick="updateSetting('voteTime', 40)" class="setting-btn py-2.5 rounded-xl border text-xs sm:text-sm font-bold transition">
+                  40 mp
+                </button>
+                <button type="button" data-setting="voteTime" data-value="60" onclick="updateSetting('voteTime', 60)" class="setting-btn py-2.5 rounded-xl border text-xs sm:text-sm font-bold transition">
+                  60 mp
                 </button>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Jobb oszlop: Játékosok listája és Indítás -->
-        <div class="lg:col-span-5 flex flex-col justify-between glass-card rounded-3xl p-5 sm:p-6 space-y-6">
+        <!-- Jobb oszlop: Kiállító művészek listája és Tárlat megnyitása -->
+        <div class="lg:col-span-5 flex flex-col justify-between museum-card rounded-2xl p-5 sm:p-6 space-y-6">
           <div class="space-y-4">
-            <div class="flex items-center justify-between">
-              <h2 class="text-xl font-bold text-white">
-                👥 Játékosok (<span id="lobby-player-count">1</span>)
+            <div class="flex items-center justify-between border-b border-[#C29B48]/25 pb-3">
+              <h2 class="text-xl font-serif-display font-bold text-[#1B1917]">
+                🎨 Kiállító művészek (<span id="lobby-player-count">1</span>)
               </h2>
-              <span class="text-xs text-slate-400">Min. 2 fő ajánlott</span>
+              <span id="lobby-media-filter-hint" class="text-[11px] font-semibold text-[#9A7830]">
+                Képek &amp; videók
+              </span>
             </div>
 
-            <div id="lobby-players-list" class="space-y-2.5 max-h-[380px] overflow-y-auto pr-1">
-              <!-- JS rendereli a játékosokat -->
+            <div id="lobby-players-list" class="space-y-2.5 max-h-[390px] overflow-y-auto pr-1">
+              <!-- JS rendereli a kiállítókat -->
             </div>
           </div>
 
-          <div class="pt-4 border-t border-white/10 space-y-3">
-            <button id="btn-start-game" type="button" onclick="hostStartGame()" class="w-full py-4 rounded-2xl btn-gradient text-white font-display font-extrabold text-lg shadow-xl flex items-center justify-center gap-2">
-              <span>🍾 Játék indítása!</span>
+          <div class="pt-4 border-t border-[#C29B48]/30 space-y-3">
+            <button id="btn-start-game" type="button" onclick="hostStartGame()" class="w-full py-4 rounded-xl btn-museum-primary font-serif-display font-bold text-lg flex items-center justify-center gap-2">
+              <span>🏛️ Tárlat megnyitása</span>
             </button>
-            <p id="guest-waiting-msg" class="hidden text-center text-sm text-purple-300 font-medium py-3 px-4 rounded-2xl bg-purple-500/15 border border-purple-500/25">
-              ⏳ Várakozás a szobagazdára a játék indításához...
+            <p id="guest-waiting-msg" class="hidden text-center text-sm text-[#6E2626] font-medium py-3 px-4 rounded-xl bg-[#6E2626]/10 border border-[#6E2626]/25">
+              ⏳ Várakozás a kurátorra a kiállítás megnyitásához...
             </p>
           </div>
         </div>
@@ -530,243 +687,287 @@
     </section>
 
     <!-- ===================================================================== -->
-    <!-- 3. NÉZET: JÁTÉKTÉR (PÖRGETÉS -> SZAVAZÁS -> FELFEDÉS & PONTOZÁS)       -->
+    <!-- 3. NÉZET: A KIÁLLÍTÓTÉR (JÁTÉKMENET)                                  -->
     <!-- ===================================================================== -->
     <section id="view-game" class="hidden space-y-5">
-      <!-- Felső státusz sáv -->
-      <div class="glass-card rounded-2xl p-3.5 sm:px-6 flex flex-wrap items-center justify-between gap-3">
+      <!-- Felső kiállítási információs sáv -->
+      <div class="museum-card rounded-2xl p-3.5 sm:px-6 flex flex-wrap items-center justify-between gap-3">
         <div class="flex items-center gap-3">
-          <span id="game-round-badge" class="px-3.5 py-1.5 rounded-xl bg-purple-600/30 border border-purple-400/30 font-display font-bold text-sm text-purple-200">
-            1 / 10. kör
+          <span id="game-round-badge" class="px-3.5 py-1.5 rounded-lg bg-[#6E2626] text-[#FAF8F5] font-serif-display font-bold text-sm shadow-sm">
+            I / V. Műtárgy
           </span>
-          <span id="game-phase-title" class="font-display font-bold text-base sm:text-lg text-white">
-            Üveg pörgetése...
+          <span id="game-phase-title" class="font-serif-display font-bold text-base sm:text-xl text-[#1B1917]">
+            A kurátor előkészíti a következő műtárgyat...
           </span>
         </div>
 
-        <!-- Visszaszámláló vagy szavazat számláló -->
         <div class="flex items-center gap-3">
-          <div id="game-vote-progress-pill" class="hidden px-3 py-1.5 rounded-xl glass-pill text-xs sm:text-sm font-semibold text-pink-300">
-            Szavazatok: <strong id="game-votes-count">0 / 0</strong>
+          <div id="game-vote-progress-pill" class="hidden px-3 py-1.5 rounded-lg museum-inset text-xs sm:text-sm font-semibold text-[#57534E]">
+            Leadott tippek: <strong id="game-votes-count" class="text-[#1B1917]">0 / 0</strong>
           </div>
-          <div id="game-timer-pill" class="hidden px-3.5 py-1.5 rounded-xl bg-amber-500/20 border border-amber-400/40 font-display font-extrabold text-base sm:text-lg text-amber-300 min-w-[74px] text-center">
-            20 mp
-          </div>
-        </div>
-      </div>
-
-      <!-- FÁZIS A: PÖRGETÉS (SPIN THE BOTTLE KÖR ALAKÚ ARÉNA) -->
-      <div id="stage-spin" class="hidden glass-card rounded-3xl p-4 sm:p-8">
-        <div class="text-center mb-2">
-          <p id="spin-subtitle" class="text-sm sm:text-base text-purple-200 font-medium">
-            Az üveg pörög... Vajon kinek a mappájából kerül elő a következő emlék?
-          </p>
-        </div>
-
-        <!-- Kör alakú asztal konténer -->
-        <div id="spin-circle-arena" class="relative w-full max-w-[540px] aspect-square mx-auto my-2">
-          <!-- Dekoratív belső neon gyűrűk -->
-          <div class="absolute inset-[16%] rounded-full border border-purple-500/25 bg-gradient-to-b from-purple-900/15 to-pink-900/15 shadow-inner"></div>
-          <div class="absolute inset-[31%] rounded-full border border-dashed border-pink-500/25"></div>
-
-          <!-- Játékos avatarok a kör kerületén (JS helyezi el) -->
-          <div id="spin-players-ring" class="absolute inset-0"></div>
-
-          <!-- Középső forgó üveg + rejtélyes kérdőjel -->
-          <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div class="relative w-36 h-36 sm:w-44 sm:h-44 rounded-full bg-slate-950/85 border border-white/15 neon-glow-purple flex items-center justify-center">
-              <!-- SVG Üveg -->
-              <svg id="spin-bottle-svg" viewBox="0 0 100 180" class="w-16 h-28 sm:w-20 sm:h-36 drop-shadow-[0_0_16px_rgba(236,72,153,0.75)]">
-                <defs>
-                  <linearGradient id="bottleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color="#f59e0b" />
-                    <stop offset="45%" stop-color="#ec4899" />
-                    <stop offset="100%" stop-color="#9333ea" />
-                  </linearGradient>
-                  <linearGradient id="bottleGlass" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stop-color="rgba(255,255,255,0.45)" />
-                    <stop offset="50%" stop-color="rgba(255,255,255,0.05)" />
-                    <stop offset="100%" stop-color="rgba(255,255,255,0.25)" />
-                  </linearGradient>
-                </defs>
-                <!-- Kupak / Mutató hegy -->
-                <rect x="41" y="6" width="18" height="14" rx="4" fill="#fbbf24" />
-                <!-- Üveg nyaka -->
-                <path d="M42 20 L58 20 L61 56 L39 56 Z" fill="url(#bottleGrad)" />
-                <!-- Üveg teste -->
-                <rect x="30" y="54" width="40" height="114" rx="16" fill="url(#bottleGrad)" stroke="rgba(255,255,255,0.4)" stroke-width="2" />
-                <!-- Üveg csillogás -->
-                <rect x="35" y="62" width="10" height="96" rx="5" fill="url(#bottleGlass)" />
-                <!-- Címke -->
-                <rect x="34" y="92" width="32" height="36" rx="6" fill="rgba(9,6,18,0.75)" />
-                <text x="50" y="116" text-anchor="middle" fill="#fbbf24" font-family="Outfit, sans-serif" font-weight="900" font-size="22">?</text>
-              </svg>
-
-              <!-- Betöltési / Rejtélyes jelvény -->
-              <div id="spin-mystery-badge" class="hidden absolute -bottom-3 px-3 py-1 rounded-full bg-amber-500 text-slate-950 font-display font-black text-xs shadow-lg animate-bounce">
-                Média betöltése...
-              </div>
-            </div>
+          <div id="game-timer-pill" class="hidden px-3.5 py-1.5 rounded-lg bg-[#FAF8F5] border border-[#C29B48] font-serif-display font-extrabold text-base sm:text-lg text-[#6E2626] min-w-[78px] text-center shadow-sm">
+            25 mp
           </div>
         </div>
       </div>
 
-      <!-- FÁZIS B: SZAVAZÁS (KÉP / VIDEÓ KÖZÉPEN + JÁTÉKOS TIPP KÁRTYÁK) -->
-      <div id="stage-vote" class="hidden space-y-5">
-        <!-- Visszaszámláló csík -->
-        <div class="w-full h-2.5 rounded-full bg-slate-900 overflow-hidden border border-white/10">
-          <div id="vote-timer-bar" class="h-full bg-gradient-to-r from-purple-500 via-pink-500 to-amber-400 transition-all duration-300" style="width: 100%;"></div>
-        </div>
-
-        <!-- Média megjelenítő doboz -->
-        <div class="glass-card rounded-3xl p-4 sm:p-6 flex flex-col items-center justify-center relative overflow-hidden">
-          <div class="w-full flex items-center justify-between mb-3">
-            <span id="vote-media-badge" class="text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-pink-500/20 text-pink-300 border border-pink-500/30">
-              🖼️ Rejtélyes kép
-            </span>
-            <button id="btn-zoom-media" type="button" onclick="openCurrentMediaLightbox()" class="text-xs px-3 py-1.5 rounded-xl glass-pill hover:bg-white/15 text-slate-200 font-medium transition">
-              🔍 Nagyítás
-            </button>
-          </div>
-
-          <!-- Kép konténer -->
-          <div id="vote-image-wrapper" class="hidden w-full flex justify-center bg-black/40 rounded-2xl p-2 border border-white/5">
-            <img id="vote-media-image" src="" alt="Rejtélyes kép" onclick="openCurrentMediaLightbox()" class="max-h-[46dvh] w-auto max-w-full rounded-xl object-contain cursor-zoom-in shadow-2xl" />
-          </div>
-
-          <!-- Videó konténer -->
-          <div id="vote-video-wrapper" class="hidden w-full flex justify-center bg-black/60 rounded-2xl p-2 border border-white/5">
-            <video id="vote-media-video" controls autoplay loop playsinline class="max-h-[46dvh] w-auto max-w-full rounded-xl shadow-2xl"></video>
-          </div>
-        </div>
-
-        <!-- Szavazó gombok rácsa -->
-        <div class="glass-card rounded-3xl p-5 sm:p-6 space-y-4">
-          <div class="flex flex-wrap items-center justify-between gap-2">
-            <h3 class="text-lg sm:text-xl font-bold text-white">
-              🤔 Szerinted kinek a fájljai közül származik?
-            </h3>
-            <span id="my-vote-status" class="text-xs font-semibold text-amber-300">
-              Kattints egy játékosra a szavazáshoz!
-            </span>
-          </div>
-
-          <div id="vote-players-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-            <!-- JS rendereli a szavazható játékos kártyákat -->
-          </div>
-        </div>
+      <!-- Visszaszámláló sáv (csak szavazás alatt) -->
+      <div id="vote-timer-bar-wrapper" class="hidden w-full h-2 rounded-full bg-[#ECE7DD] overflow-hidden border border-[#C29B48]/40">
+        <div id="vote-timer-bar" class="h-full bg-gradient-to-r from-[#6E2626] via-[#9A7830] to-[#C29B48] transition-all duration-300" style="width: 100%;"></div>
       </div>
 
-      <!-- FÁZIS C: FELFEDÉS ÉS PONTOZÁS -->
-      <div id="stage-reveal" class="hidden space-y-6">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
-          <!-- Bal oldal: Üveg drámai rámutatása a valódi tulajdonosra -->
-          <div class="lg:col-span-6 glass-card rounded-3xl p-4 sm:p-6">
-            <div class="text-center mb-2">
-              <span class="text-xs uppercase tracking-widest text-amber-400 font-bold">Az üveg megállt!</span>
-              <h3 id="reveal-owner-headline" class="text-xl sm:text-2xl font-display font-black text-white mt-0.5">
-                A tulajdonos: ...
-              </h3>
-            </div>
+      <!-- =================================================================== -->
+      <!-- KIÁLLÍTÓFAL: DÍSZES KÉPKERET + BÁRSONYFÜGGÖNY + REFLEKTORFÉNY       -->
+      <!-- =================================================================== -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
-            <div class="relative w-full max-w-[420px] aspect-square mx-auto">
-              <div class="absolute inset-[18%] rounded-full border border-amber-500/30 bg-amber-500/5"></div>
-              <div id="reveal-players-ring" class="absolute inset-0"></div>
+        <!-- Bal/Fő oszlop: A kiállítófal a keretezett művel -->
+        <div class="lg:col-span-8">
+          <div class="gallery-wall-stage rounded-2xl p-4 sm:p-8 relative overflow-hidden flex flex-col items-center justify-center min-h-[340px] sm:min-h-[460px]">
+            <!-- Mennyezeti galérialámpa fénycsóvája -->
+            <div id="gallery-spotlight" class="gallery-spotlight-beam absolute inset-0 opacity-0"></div>
 
-              <!-- Középső üveg, amely rámutat a tulajdonosra -->
-              <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div class="w-32 h-32 sm:w-36 sm:h-36 rounded-full bg-slate-950/90 border border-amber-400/40 neon-glow-amber flex items-center justify-center">
-                  <svg id="reveal-bottle-svg" viewBox="0 0 100 180" class="w-14 h-24 sm:w-16 sm:h-28 bottle-reveal-transition drop-shadow-[0_0_18px_rgba(245,158,11,0.85)]">
-                    <rect x="41" y="6" width="18" height="14" rx="4" fill="#fbbf24" />
-                    <path d="M42 20 L58 20 L61 56 L39 56 Z" fill="url(#bottleGrad)" />
-                    <rect x="30" y="54" width="40" height="114" rx="16" fill="url(#bottleGrad)" stroke="#fde68a" stroke-width="2.5" />
-                    <rect x="35" y="62" width="10" height="96" rx="5" fill="url(#bottleGlass)" />
-                    <rect x="34" y="92" width="32" height="36" rx="6" fill="rgba(9,6,18,0.8)" />
-                    <text x="50" y="116" text-anchor="middle" fill="#34d399" font-family="Outfit, sans-serif" font-weight="900" font-size="20">✓</text>
-                  </svg>
+            <!-- Finom fénycsillanás a reflektorfényben -->
+            <div class="spotlight-dust absolute top-8 left-1/4 w-1.5 h-1.5 rounded-full bg-[#E5CE94] pointer-events-none"></div>
+            <div class="spotlight-dust absolute top-16 right-1/3 w-1 h-1 rounded-full bg-[#E5CE94] pointer-events-none" style="animation-delay: 1.5s;"></div>
+
+            <!-- Felső függönyrúd díszítés -->
+            <div class="absolute top-0 left-0 right-0 h-2.5 bg-gradient-to-b from-[#9A7830] via-[#E5CE94] to-[#6E531C] z-30 shadow-md"></div>
+
+            <!-- BÁRSONYFÜGGÖNY / VÁSZONLEPEL (Zárt állapotban eltakarja a művet sorsolás/betöltés alatt) -->
+            <div id="curtain-overlay" class="absolute inset-0 z-20 flex pointer-events-none overflow-hidden">
+              <div id="curtain-left" class="velvet-curtain-panel curtain-closed-left w-1/2 h-full border-r-2 border-[#C29B48]"></div>
+              <div id="curtain-right" class="velvet-curtain-panel curtain-closed-right w-1/2 h-full border-l-2 border-[#C29B48]"></div>
+
+              <!-- Kurátori előkészítő felirat a lepel előtt -->
+              <div id="curtain-status-box" class="absolute inset-0 flex flex-col items-center justify-center p-6 text-center transition-opacity duration-500">
+                <div class="px-6 py-5 rounded-2xl bg-[#FAF8F5]/95 border-2 border-[#C29B48] shadow-2xl max-w-sm space-y-2.5">
+                  <div class="text-3xl">🏛️</div>
+                  <h3 class="font-serif-display font-bold text-lg sm:text-xl text-[#1B1917]">
+                    A kurátor előkészíti a következő műtárgyat...
+                  </h3>
+                  <p id="preparing-subtext" class="text-xs text-[#57534E]">
+                    Titkos válogatás a kiállítók gyűjteményéből
+                  </p>
+                  <!-- Videó átviteli folyamatjelző (ha videó töltődik) -->
+                  <div id="preparing-progress-wrap" class="hidden pt-1 space-y-1">
+                    <div class="w-full h-1.5 rounded-full bg-[#ECE7DD] overflow-hidden">
+                      <div id="preparing-progress-bar" class="h-full bg-[#6E2626] transition-all duration-200" style="width: 15%;"></div>
+                    </div>
+                    <span id="preparing-progress-label" class="block text-[11px] font-semibold text-[#6E2626]">Betöltés...</span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <!-- Jobb oldal: Szavazatok részletezése + Ranglista -->
-          <div class="lg:col-span-6 space-y-5">
-            <!-- Ki kire szavazott kártya -->
-            <div class="glass-card rounded-3xl p-5 space-y-3">
-              <div class="flex items-center justify-between">
-                <h4 class="font-display font-bold text-lg text-white">🗳️ Szavazatok összesítése</h4>
-                <button type="button" onclick="openCurrentMediaLightbox()" id="btn-reveal-view-media" class="text-xs px-3 py-1.5 rounded-xl glass-pill hover:bg-white/10 text-purple-300">
-                  Média megtekintése
+            <!-- DÍSZES MÚZEUMI KÉPKERET (ORNATE FRAME + MATBOARD) -->
+            <div class="relative z-10 max-w-full flex flex-col items-center">
+              <div class="ornate-frame">
+                <div class="ornate-frame-inner">
+                  <div class="museum-matboard">
+                    <div class="artwork-recess relative overflow-hidden flex items-center justify-center">
+                      <!-- Kiállított kép -->
+                      <img
+                        id="exhibit-image"
+                        src=""
+                        alt="Kiállított műalkotás"
+                        onclick="openCurrentMediaLightbox()"
+                        class="hidden max-h-[48dvh] w-auto max-w-full object-contain cursor-zoom-in transition-transform duration-300 hover:scale-[1.01]"
+                      />
+
+                      <!-- Kiállított videó -->
+                      <video
+                        id="exhibit-video"
+                        controls
+                        autoplay
+                        loop
+                        playsinline
+                        class="hidden max-h-[48dvh] w-auto max-w-full object-contain"
+                      ></video>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Nagyító gomb a keret alatt (csak képeknél) -->
+              <div class="mt-4 flex items-center gap-3">
+                <button id="btn-zoom-media" type="button" onclick="openCurrentMediaLightbox()" class="hidden px-4 py-2 rounded-xl btn-museum-brass text-xs font-semibold text-[#1B1917] flex items-center gap-1.5 shadow-sm">
+                  <span>🔍 Nagyító (Közelkép vizsgálata)</span>
                 </button>
               </div>
-              <div id="reveal-votes-breakdown" class="space-y-2 max-h-52 overflow-y-auto pr-1">
+            </div>
+          </div>
+        </div>
+
+        <!-- Jobb oszlop: 3D Műtárgy-katalóguscédula + Pontállás / Gombok -->
+        <div class="lg:col-span-4 space-y-5">
+
+          <!-- 3D MŰTÁRGY-KATALÓGUSCÉDULA (MUSEUM PLACARD) -->
+          <div class="placard-scene w-full">
+            <div id="museum-placard-card" class="placard-card w-full min-h-[210px]">
+
+              <!-- ELŐLAP (Szavazás alatt: Ismeretlen alkotó) -->
+              <div class="placard-face museum-card rounded-xl p-5 sm:p-6 border-2 border-[#C29B48]/70 shadow-md flex flex-col justify-between min-h-[210px]">
+                <div class="flex items-start justify-between gap-2 border-b border-[#C29B48]/30 pb-3">
+                  <div>
+                    <span id="placard-catalog-num" class="text-[11px] uppercase tracking-[0.2em] text-[#9A7830] font-bold">
+                      Katalógusszám: #01
+                    </span>
+                    <h3 id="placard-medium-title" class="font-serif-display font-bold text-lg text-[#1B1917] mt-0.5">
+                      Magángyűjteményi Fotográfia
+                    </h3>
+                  </div>
+                  <div class="w-9 h-9 rounded-full brass-seal flex items-center justify-center text-white font-serif-display font-bold text-base shrink-0">
+                    ?
+                  </div>
+                </div>
+
+                <div class="py-4 space-y-1">
+                  <div class="text-[11px] uppercase tracking-widest text-[#57534E]">Alkotó</div>
+                  <div class="font-serif-display italic font-bold text-2xl text-[#6E2626]">
+                    Ismeretlen alkotó
+                  </div>
+                  <p class="text-xs text-[#57534E] pt-1">
+                    Vizsgáld meg a kompozíció részleteit, és add le tippedet a művész személyére!
+                  </p>
+                </div>
+
+                <div class="pt-2 border-t border-[#C29B48]/25 flex items-center justify-between text-[11px] text-[#9A7830] font-semibold">
+                  <span>A Tárlat Archívum</span>
+                  <span>Hitelesítés folyamatban</span>
+                </div>
+              </div>
+
+              <!-- HÁTLAP (Leleplezéskor: Aranyozott dombornyomású művésznév) -->
+              <div class="placard-face placard-back absolute inset-0 rounded-xl p-5 sm:p-6 bg-gradient-to-br from-[#FAF8F5] via-[#F5EFE2] to-[#EBE0C9] border-2 border-[#C29B48] shadow-xl flex flex-col justify-between min-h-[210px]">
+                <div class="flex items-start justify-between gap-2 border-b border-[#C29B48]/50 pb-3">
+                  <div>
+                    <span class="text-[11px] uppercase tracking-[0.2em] text-[#9A7830] font-bold">
+                      Hitelesített Műtárgy
+                    </span>
+                    <div class="text-xs text-[#57534E] mt-0.5" id="placard-reveal-stats">
+                      0 helyes műértő tipp
+                    </div>
+                  </div>
+                  <div class="w-10 h-10 rounded-full brass-seal flex items-center justify-center text-xl shadow shrink-0" id="placard-owner-avatar">
+                    🎨
+                  </div>
+                </div>
+
+                <div class="py-3">
+                  <div class="text-[11px] uppercase tracking-widest text-[#9A7830] font-bold">A mű alkotója</div>
+                  <div id="placard-owner-name" class="font-serif-display font-black text-2xl sm:text-3xl text-[#1B1917] mt-0.5 leading-tight">
+                    Művész Neve
+                  </div>
+                  <div id="placard-owner-bonus-badge" class="inline-block mt-2 text-xs font-semibold px-2.5 py-0.5 rounded-md bg-[#6E2626]/10 text-[#6E2626] border border-[#6E2626]/25">
+                    +0 pont megtévesztési bónusz
+                  </div>
+                </div>
+
+                <div class="pt-2 border-t border-[#C29B48]/40 flex items-center justify-between text-[11px] text-[#9A7830] font-bold">
+                  <span>🏛️ A Tárlat Katalógus</span>
+                  <span>Eredetiség igazolva ✓</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Leleplezés utáni szavazat-összesítés és ranglista (csak REVEAL fázisban látható) -->
+          <div id="reveal-side-panel" class="hidden space-y-4">
+            <!-- Ki kire szavazott -->
+            <div class="museum-card rounded-2xl p-4 sm:p-5 space-y-3">
+              <h4 class="font-serif-display font-bold text-lg text-[#1B1917] border-b border-[#C29B48]/25 pb-2">
+                📜 Műértői tippek összesítése
+              </h4>
+              <div id="reveal-votes-breakdown" class="space-y-2 max-h-56 overflow-y-auto pr-1">
                 <!-- JS tölti fel -->
               </div>
             </div>
 
-            <!-- Aktuális ranglista -->
-            <div class="glass-card rounded-3xl p-5 space-y-3">
-              <h4 class="font-display font-bold text-lg text-white">🏆 Állás</h4>
-              <div id="reveal-leaderboard" class="space-y-2 max-h-60 overflow-y-auto pr-1">
+            <!-- Aktuális pontállás -->
+            <div class="museum-card rounded-2xl p-4 sm:p-5 space-y-3">
+              <h4 class="font-serif-display font-bold text-lg text-[#1B1917] border-b border-[#C29B48]/25 pb-2">
+                🏆 Aktuális állás
+              </h4>
+              <div id="reveal-leaderboard" class="space-y-2 max-h-48 overflow-y-auto pr-1">
                 <!-- JS tölti fel -->
               </div>
             </div>
 
-            <!-- Szobagazda tovább gombja -->
-            <div id="host-reveal-controls" class="hidden flex flex-col sm:flex-row gap-3">
-              <button id="btn-next-round" type="button" onclick="hostNextRound()" class="flex-1 py-4 rounded-2xl btn-gradient text-white font-display font-extrabold text-lg shadow-xl">
-                ➡️ Következő kör
-              </button>
-              <button id="btn-end-infinite" type="button" onclick="hostFinishGame()" class="hidden px-5 py-4 rounded-2xl glass-pill hover:bg-white/10 text-amber-300 font-bold text-sm">
-                🏁 Befejezés
+            <!-- Kurátor (Hoszt) tovább gombja -->
+            <div id="host-reveal-controls" class="hidden">
+              <button id="btn-next-round" type="button" onclick="hostNextRound()" class="w-full py-4 rounded-xl btn-museum-primary font-serif-display font-bold text-lg">
+                ➡️ Következő műtárgy
               </button>
             </div>
 
-            <p id="guest-reveal-wait" class="hidden text-center text-sm text-purple-300 py-3 px-4 rounded-2xl bg-purple-500/15 border border-purple-500/25">
-              ⏳ Várakozás a szobagazdára a következő kör indításához...
+            <p id="guest-reveal-wait" class="hidden text-center text-xs sm:text-sm text-[#6E2626] font-medium py-3 px-4 rounded-xl bg-[#6E2626]/10 border border-[#6E2626]/25">
+              ⏳ Várakozás a kurátorra a következő műtárgy bemutatásához...
             </p>
           </div>
+        </div>
+      </div>
+
+      <!-- =================================================================== -->
+      <!-- SZAVAZÓKÁRTYÁK RÁCSA (Csak VOTING fázisban látható)                  -->
+      <!-- =================================================================== -->
+      <div id="voting-cards-section" class="hidden museum-card rounded-2xl p-5 sm:p-6 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-[#C29B48]/25 pb-3">
+          <h3 class="text-lg sm:text-xl font-serif-display font-bold text-[#1B1917]">
+            🕵️ Szerinted melyik kiállító gyűjteményéből származik a mű?
+          </h3>
+          <span id="my-vote-status" class="text-xs font-bold px-3 py-1 rounded-full bg-[#ECE7DD] text-[#6E2626] border border-[#C29B48]/40">
+            Válassz egy művészt a listából!
+          </span>
+        </div>
+
+        <div id="vote-players-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+          <!-- JS rendereli az elegáns sárgaréz-szegélyű szavazókártyákat -->
         </div>
       </div>
     </section>
 
     <!-- ===================================================================== -->
-    <!-- 4. NÉZET: VÉGEREDMÉNY & DOBOGÓ                                        -->
+    <!-- 4. NÉZET: ZÁRÓ GÁLA & DÍJÁTADÓ (VÉGEREDMÉNY PÓDIUM)                   -->
     <!-- ===================================================================== -->
     <section id="view-gameover" class="hidden max-w-3xl mx-auto space-y-6">
-      <div class="glass-card rounded-3xl p-6 sm:p-10 text-center space-y-6 border border-amber-500/30">
+      <div class="museum-card rounded-2xl p-6 sm:p-10 text-center space-y-7 border-2 border-[#C29B48]">
         <div class="space-y-2">
-          <span class="inline-block px-4 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-bold uppercase tracking-widest border border-amber-500/30">
-            Játék vége
+          <span class="inline-block px-4 py-1 rounded-full bg-[#6E2626]/10 text-[#6E2626] text-xs font-bold uppercase tracking-[0.2em] border border-[#6E2626]/25">
+            A Tárlat Záró Gálája
           </span>
-          <h2 class="text-3xl sm:text-5xl font-display font-black text-white">
-            🏆 Végeredmény
+          <h2 class="text-3xl sm:text-5xl font-serif-display font-black text-[#1B1917]">
+            🏆 Díjátadó &amp; Végeredmény
           </h2>
+          <p class="text-sm text-[#57534E] font-garamond italic text-lg">
+            Köszönjük minden kiállítónak és műértőnek a részvételt!
+          </p>
         </div>
 
-        <!-- Dobogó (Top 3) -->
-        <div id="gameover-podium" class="grid grid-cols-3 gap-2 sm:gap-4 items-end pt-4 max-w-xl mx-auto">
-          <!-- JS rendereli az 1-3. helyezettet -->
+        <!-- Múzeumi dobogó (Arany / Ezüst / Bronz keretekkel) -->
+        <div id="gameover-podium" class="grid grid-cols-3 gap-2 sm:gap-5 items-end pt-4 max-w-xl mx-auto">
+          <!-- JS rendereli az 1–3. helyezettet -->
         </div>
 
         <!-- Különdíjak -->
-        <div id="gameover-awards" class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
+        <div id="gameover-awards" class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 text-left">
           <!-- JS tölti fel -->
         </div>
 
         <!-- Teljes ranglista -->
-        <div class="text-left space-y-2 pt-2">
-          <h3 class="text-sm font-bold uppercase tracking-wider text-slate-400">Teljes rangsor</h3>
+        <div class="text-left space-y-2.5 pt-2">
+          <h3 class="text-xs font-bold uppercase tracking-[0.18em] text-[#9A7830]">A kiállítás teljes rangsora</h3>
           <div id="gameover-full-list" class="space-y-2"></div>
         </div>
 
-        <!-- Újrajátszás gombok -->
+        <!-- Új kiállítás indítása gombok -->
         <div class="pt-4 flex flex-col sm:flex-row gap-3 justify-center">
-          <button id="btn-play-again" type="button" onclick="hostResetToLobby()" class="hidden px-8 py-4 rounded-2xl btn-gradient text-white font-display font-extrabold text-lg shadow-xl">
-            🔄 Új játék ugyanebben a szobában
+          <button id="btn-play-again" type="button" onclick="hostResetToLobby()" class="hidden px-8 py-4 rounded-xl btn-museum-primary font-serif-display font-bold text-lg">
+            🏛️ Új kiállítás indítása
           </button>
-          <button type="button" onclick="confirmLeaveRoom()" class="px-6 py-4 rounded-2xl glass-pill hover:bg-white/10 text-slate-200 font-bold text-base">
-            🏠 Vissza a főoldalra
+          <button type="button" onclick="confirmLeaveRoom()" class="px-6 py-4 rounded-xl btn-museum-brass font-bold text-base">
+            🚪 Vissza az előcsarnokba
           </button>
         </div>
       </div>
@@ -775,15 +976,15 @@
   </main>
 
   <!-- ======================================================================= -->
-  <!-- ALKALMAZÁS LOGIKA (JAVASCRIPT)                                          -->
+  <!-- JAVASCRIPT ALKALMAZÁS LOGIKA                                            -->
   <!-- ======================================================================= -->
   <script>
     /**
      * =========================================================================
-     * 1. WEB AUDIO API HANGEFFEKTEK (KÜLSŐ HANGFÁJL NÉLKÜL, NÉMÍTHATÓ)
+     * 1. GALÉRIÁS HANGEFFEKTEK (WEB AUDIO API — NÉMÍTHATÓ, KÜLSŐ FÁJL NÉLKÜL)
      * =========================================================================
      */
-    class SoundFX {
+    class GallerySoundFX {
       constructor() {
         this.ctx = null;
         this.muted = false;
@@ -792,9 +993,7 @@
       init() {
         if (!this.ctx) {
           const AudioCtx = window.AudioContext || window.webkitAudioContext;
-          if (AudioCtx) {
-            this.ctx = new AudioCtx();
-          }
+          if (AudioCtx) this.ctx = new AudioCtx();
         }
         if (this.ctx && this.ctx.state === 'suspended') {
           this.ctx.resume().catch(() => {});
@@ -806,8 +1005,8 @@
         return this.muted;
       }
 
-      // Üveg pörgés közbeni kattanás
-      playTick(pitchMultiplier = 1) {
+      // Finom UI kattintás
+      playSubtleClick(freq = 540) {
         if (this.muted) return;
         this.init();
         if (!this.ctx) return;
@@ -815,11 +1014,11 @@
         const now = this.ctx.currentTime;
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(520 * pitchMultiplier, now);
-        osc.frequency.exponentialRampToValueAtTime(160, now + 0.045);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, now);
+        osc.frequency.exponentialRampToValueAtTime(freq * 0.65, now + 0.04);
 
-        gain.gain.setValueAtTime(0.14, now);
+        gain.gain.setValueAtTime(0.08, now);
         gain.gain.exponentialRampToValueAtTime(0.001, now + 0.045);
 
         osc.connect(gain);
@@ -828,8 +1027,78 @@
         osc.stop(now + 0.05);
       }
 
-      // Szavazat leadása hang
-      playVote() {
+      // Bársonyfüggöny suhanás + galérialámpa felkapcsolása
+      playCurtainReveal() {
+        if (this.muted) return;
+        this.init();
+        if (!this.ctx) return;
+
+        const now = this.ctx.currentTime;
+
+        // Lágy szűrt zaj (függöny suhanás)
+        const bufferSize = this.ctx.sampleRate * 0.55;
+        const noiseBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+        const output = noiseBuffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+          output[i] = Math.random() * 2 - 1;
+        }
+        const whiteNoise = this.ctx.createBufferSource();
+        whiteNoise.buffer = noiseBuffer;
+
+        const filter = this.ctx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.setValueAtTime(320, now);
+        filter.frequency.exponentialRampToValueAtTime(880, now + 0.45);
+        filter.Q.value = 1.8;
+
+        const noiseGain = this.ctx.createGain();
+        noiseGain.gain.setValueAtTime(0.001, now);
+        noiseGain.gain.linearRampToValueAtTime(0.11, now + 0.15);
+        noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.52);
+
+        whiteNoise.connect(filter);
+        filter.connect(noiseGain);
+        noiseGain.connect(this.ctx.destination);
+        whiteNoise.start(now);
+        whiteNoise.stop(now + 0.55);
+
+        // Meleg csengőhang a reflektorfény felvillanásához
+        const bell = this.ctx.createOscillator();
+        const bellGain = this.ctx.createGain();
+        bell.type = 'triangle';
+        bell.frequency.setValueAtTime(659.25, now + 0.12); // E5
+        bellGain.gain.setValueAtTime(0.09, now + 0.12);
+        bellGain.gain.exponentialRampToValueAtTime(0.001, now + 0.65);
+        bell.connect(bellGain);
+        bellGain.connect(this.ctx.destination);
+        bell.start(now + 0.12);
+        bell.stop(now + 0.66);
+      }
+
+      // Halk papírpecsét hang szavazáskor
+      playVoteStamp() {
+        if (this.muted) return;
+        this.init();
+        if (!this.ctx) return;
+
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(280, now);
+        osc.frequency.exponentialRampToValueAtTime(140, now + 0.08);
+
+        gain.gain.setValueAtTime(0.16, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.1);
+      }
+
+      // Utolsó 5 másodperc visszaszámláló ketyegés
+      playCountdownTick() {
         if (this.muted) return;
         this.init();
         if (!this.ctx) return;
@@ -838,77 +1107,56 @@
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(440, now);
-        osc.frequency.exponentialRampToValueAtTime(780, now + 0.11);
+        osc.frequency.setValueAtTime(740, now);
 
-        gain.gain.setValueAtTime(0.18, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
-
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-        osc.start(now);
-        osc.stop(now + 0.13);
-      }
-
-      // Visszaszámláló utolsó másodpercek
-      playCountdown() {
-        if (this.muted) return;
-        this.init();
-        if (!this.ctx) return;
-
-        const now = this.ctx.currentTime;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(660, now);
-
-        gain.gain.setValueAtTime(0.1, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+        gain.gain.setValueAtTime(0.07, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
 
         osc.connect(gain);
         gain.connect(this.ctx.destination);
         osc.start(now);
-        osc.stop(now + 0.09);
+        osc.stop(now + 0.07);
       }
 
-      // Felfedés diadalmas akkord
-      playReveal() {
+      // Meleg zongora / hárfás akkord a katalóguscédula átfordulásakor
+      playRevealChord() {
         if (this.muted) return;
         this.init();
         if (!this.ctx) return;
 
-        const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
-        notes.forEach((freq, idx) => {
-          const now = this.ctx.currentTime + idx * 0.08;
+        // D-dúr add9 akkord (D4, F#4, A4, E5)
+        const freqs = [293.66, 369.99, 440.00, 659.25];
+        freqs.forEach((f, idx) => {
+          const now = this.ctx.currentTime + idx * 0.09;
           const osc = this.ctx.createOscillator();
           const gain = this.ctx.createGain();
-          osc.type = 'triangle';
-          osc.frequency.setValueAtTime(freq, now);
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(f, now);
 
-          gain.gain.setValueAtTime(0.16, now);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.55);
+          gain.gain.setValueAtTime(0.12, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.85);
 
           osc.connect(gain);
           gain.connect(this.ctx.destination);
           osc.start(now);
-          osc.stop(now + 0.56);
+          osc.stop(now + 0.88);
         });
       }
     }
 
-    const soundFX = new SoundFX();
+    const soundFX = new GallerySoundFX();
 
     /**
      * =========================================================================
      * 2. GLOBÁLIS ÁLLAPOT ÉS KONSTANSOK
      * =========================================================================
      */
-    const AVATARS = [
-      '🦊', '🦄', '🚀', '🍕', '🐼', '🐯', '🐙', '🐸',
-      '👑', '🔥', '🌈', '👾', '🐶', '🦁', '🍉', '⚡'
+    const GALLERY_EMBLEMS = [
+      '🎨', '🖼️', '🏛️', '🖋️', '📷', '🎭', '🎻', '🕯️',
+      '👑', '🏺', '📜', '🌿', '🦉', '⚜️', '🔭', '✨'
     ];
 
-    const PEER_PREFIX = 'kinek-a-kepe-party-';
+    const PEER_PREFIX = 'a-tarlat-gallery-';
     const MAX_VIDEO_BYTES = 15 * 1024 * 1024; // 15 MB limit videókhoz
     const MAX_IMAGE_DIMENSION = 1200;         // Max 1200px képekhez
     const CHUNK_SIZE = 64 * 1024;             // 64 KB WebRTC szeletméret
@@ -919,44 +1167,45 @@
       roomCode: '',
       myId: '',
       myName: '',
-      myAvatar: AVATARS[0],
+      myAvatar: GALLERY_EMBLEMS[0],
 
-      // Helyi fájlok (soha nem töltődnek fel előre)
+      // Helyi fájlok (100% privát, kizárólag a kisorsolt 1 db fájl kerül átküldésre)
       localMedia: {
         images: [], // { id, file?, dataUrl?, name }
         videos: [], // { id, file?, blob?, mimeType?, name }
         usedIds: new Set()
       },
 
-      // Szinkronizált játékállapot (Host az igazság forrása)
+      // Szinkronizált kiállítási állapot (Hoszt az igazság forrása)
       game: {
-        phase: 'HOME', // HOME | LOBBY | SPINNING | VOTING | REVEAL | GAME_OVER
+        phase: 'HOME', // HOME | LOBBY | PREPARING | VOTING | EXHIBIT_REVEAL | GAME_OVER
         settings: {
           mediaMode: 'both', // 'image' | 'video' | 'both'
-          totalRounds: 10,   // 5 | 10 | 15 | 0 (végtelen)
-          voteTime: 20       // 15 | 20 | 30
+          totalRounds: 5,    // 3 | 5 | 8 | 10
+          voteTime: 25       // 15 | 25 | 40 | 60
         },
         players: [], // { id, name, avatar, isHost, isBot, imageCount, videoCount, score, correctGuesses, fooledCount }
         round: 0,
-        spinStatusText: '',
-        currentMedia: null, // { mediaType: 'image'|'video', src: string, mimeType?: string }
-        currentOwnerId: null, // Csak a Host tudja a VOTING alatt, REVEAL-kor publikus!
-        votes: {},          // { voterId: { targetId, timeLeft } }
-        roundDeltas: {},    // { playerId: pointsEarned }
+        preparingProgress: 0, // 0..100 (videó átvitel folyamatjelző)
+        currentMedia: null,   // { mediaType: 'image'|'video', src?: string, hasMedia?: boolean }
+        currentOwnerId: null, // ANTI-SPOILER: Csak a Hoszt ismeri a VOTING alatt, EXHIBIT_REVEAL-kor publikus!
+        votes: {},            // { voterId: { targetId, timeLeft } }
+        roundDeltas: {},      // { playerId: pointsEarned }
+        ownerBonusEarned: 0,
         timeLeft: 0
       }
     };
 
-    // Hálózati objektumok
+    // WebRTC / PeerJS kapcsolatok
     let peer = null;
-    let hostConnection = null;     // Guest -> Host kapcsolat
-    const guestConnections = {};   // Host -> Guest kapcsolatok { peerId: DataConnection }
-    const incomingTransfers = {};  // Bejövő chunkolt videók összerakása
+    let hostConnection = null;
+    const guestConnections = {};
+    const incomingTransfers = {};
 
-    // Időzítők
-    let spinTickInterval = null;
+    // Időzítők & memóriakezelés
     let voteCountdownInterval = null;
     let currentMediaObjectUrl = null;
+    let lightboxZoomed = false;
 
     /**
      * =========================================================================
@@ -972,15 +1221,15 @@
 
     function renderAvatarPicker() {
       const container = document.getElementById('avatar-picker');
-      container.innerHTML = AVATARS.map((emoji, idx) => `
+      container.innerHTML = GALLERY_EMBLEMS.map((emoji, idx) => `
         <button
           type="button"
           onclick="selectAvatar('${emoji}')"
           data-avatar="${emoji}"
-          class="avatar-option aspect-square rounded-xl text-xl sm:text-2xl flex items-center justify-center border transition ${
+          class="avatar-option aspect-square rounded-xl text-lg sm:text-xl flex items-center justify-center border transition ${
             idx === 0
-              ? 'bg-purple-600/40 border-pink-400 scale-105 shadow-lg'
-              : 'bg-slate-950/60 border-white/10 hover:bg-white/10'
+              ? 'bg-[#6E2626] text-white border-[#C29B48] scale-105 shadow-md'
+              : 'bg-[#FAF8F5] text-[#1B1917] border-[#C29B48]/40 hover:bg-[#F1EDE4]'
           }"
         >
           ${emoji}
@@ -989,14 +1238,14 @@
     }
 
     function selectAvatar(emoji) {
-      soundFX.playTick(1.2);
+      soundFX.playSubtleClick(620);
       appState.myAvatar = emoji;
       document.querySelectorAll('.avatar-option').forEach(btn => {
         const isSelected = btn.dataset.avatar === emoji;
-        btn.className = `avatar-option aspect-square rounded-xl text-xl sm:text-2xl flex items-center justify-center border transition ${
+        btn.className = `avatar-option aspect-square rounded-xl text-lg sm:text-xl flex items-center justify-center border transition ${
           isSelected
-            ? 'bg-purple-600/40 border-pink-400 scale-105 shadow-lg'
-            : 'bg-slate-950/60 border-white/10 hover:bg-white/10'
+            ? 'bg-[#6E2626] text-white border-[#C29B48] scale-105 shadow-md'
+            : 'bg-[#FAF8F5] text-[#1B1917] border-[#C29B48]/40 hover:bg-[#F1EDE4]'
         }`;
       });
       saveProfile();
@@ -1004,18 +1253,18 @@
 
     function loadSavedProfile() {
       try {
-        const savedName = localStorage.getItem('kak_player_name');
-        const savedAvatar = localStorage.getItem('kak_player_avatar');
+        const savedName = localStorage.getItem('tarlat_player_name');
+        const savedAvatar = localStorage.getItem('tarlat_player_avatar');
         if (savedName) document.getElementById('input-player-name').value = savedName;
-        if (savedAvatar && AVATARS.includes(savedAvatar)) selectAvatar(savedAvatar);
+        if (savedAvatar && GALLERY_EMBLEMS.includes(savedAvatar)) selectAvatar(savedAvatar);
       } catch (e) {}
     }
 
     function saveProfile() {
       try {
-        const nameVal = document.getElementById('input-player-name').value.trim();
-        if (nameVal) localStorage.setItem('kak_player_name', nameVal);
-        localStorage.setItem('kak_player_avatar', appState.myAvatar);
+        const val = document.getElementById('input-player-name').value.trim();
+        if (val) localStorage.setItem('tarlat_player_name', val);
+        localStorage.setItem('tarlat_player_avatar', appState.myAvatar);
       } catch (e) {}
     }
 
@@ -1027,26 +1276,27 @@
         if (cleanCode) {
           switchHomeTab('join');
           document.getElementById('input-room-code').value = cleanCode;
-          showToast(`Meghívó érzékelve a(z) ${cleanCode} szobába! Add meg a neved és csatlakozz.`, 'info');
+          showToast(`Meghívó érkezett a(z) ${cleanCode} kiállítóterembe! Add meg a neved és lépj be.`, 'info');
           setTimeout(() => document.getElementById('input-player-name').focus(), 200);
         }
       }
     }
 
     function switchHomeTab(tab) {
+      soundFX.playSubtleClick(520);
       const createTab = document.getElementById('tab-create');
       const joinTab = document.getElementById('tab-join');
       const createPanel = document.getElementById('panel-create');
       const joinPanel = document.getElementById('panel-join');
 
       if (tab === 'create') {
-        createTab.className = 'py-2.5 rounded-xl text-sm font-bold transition bg-purple-600 text-white shadow-lg';
-        joinTab.className = 'py-2.5 rounded-xl text-sm font-bold text-slate-400 hover:text-white transition';
+        createTab.className = 'py-2.5 rounded-lg text-sm font-bold transition bg-[#6E2626] text-[#FAF8F5] shadow';
+        joinTab.className = 'py-2.5 rounded-lg text-sm font-bold text-[#57534E] hover:text-[#1B1917] transition';
         createPanel.classList.remove('hidden');
         joinPanel.classList.add('hidden');
       } else {
-        joinTab.className = 'py-2.5 rounded-xl text-sm font-bold transition bg-amber-500 text-slate-950 shadow-lg';
-        createTab.className = 'py-2.5 rounded-xl text-sm font-bold text-slate-400 hover:text-white transition';
+        joinTab.className = 'py-2.5 rounded-lg text-sm font-bold transition bg-[#6E2626] text-[#FAF8F5] shadow';
+        createTab.className = 'py-2.5 rounded-lg text-sm font-bold text-[#57534E] hover:text-[#1B1917] transition';
         joinPanel.classList.remove('hidden');
         createPanel.classList.add('hidden');
       }
@@ -1069,16 +1319,16 @@
     function showToast(message, type = 'info') {
       const container = document.getElementById('toast-container');
       const toast = document.createElement('div');
-      const colors = {
-        info: 'border-purple-400/40 bg-slate-900/95 text-purple-100',
-        success: 'border-emerald-400/40 bg-emerald-950/95 text-emerald-100',
-        warning: 'border-amber-400/40 bg-amber-950/95 text-amber-100',
-        error: 'border-rose-400/40 bg-rose-950/95 text-rose-100'
+      const styles = {
+        info: 'border-[#C29B48] bg-[#FAF8F5] text-[#1B1917]',
+        success: 'border-emerald-700/50 bg-[#F4FAF6] text-emerald-950',
+        warning: 'border-amber-700/50 bg-[#FDF9F0] text-amber-950',
+        error: 'border-[#6E2626] bg-[#FDF4F4] text-[#4A1616]'
       };
-      const icons = { info: '✨', success: '✅', warning: '⚠️', error: '❌' };
+      const icons = { info: '🏛️', success: '✅', warning: '⚠️', error: '❌' };
 
-      toast.className = `pointer-events-auto p-3.5 rounded-2xl border backdrop-blur-xl shadow-2xl text-xs sm:text-sm font-medium flex items-center gap-2.5 transition-all duration-300 ${colors[type] || colors.info}`;
-      toast.innerHTML = `<span class="text-base">${icons[type] || '✨'}</span><span class="flex-1">${escapeHtml(message)}</span>`;
+      toast.className = `pointer-events-auto p-3.5 rounded-xl border-l-4 border shadow-xl text-xs sm:text-sm font-medium flex items-center gap-2.5 transition-all duration-300 ${styles[type] || styles.info}`;
+      toast.innerHTML = `<span class="text-base">${icons[type] || '🏛️'}</span><span class="flex-1">${escapeHtml(message)}</span>`;
       container.appendChild(toast);
 
       setTimeout(() => {
@@ -1088,7 +1338,7 @@
       }, 4000);
     }
 
-    function showCustomModal({ icon = 'ℹ️', title, message, buttons }) {
+    function showCustomModal({ icon = '🏛️', title, message, buttons }) {
       const modal = document.getElementById('custom-modal');
       document.getElementById('modal-icon').textContent = icon;
       document.getElementById('modal-title').textContent = title;
@@ -1101,8 +1351,8 @@
         b.type = 'button';
         b.textContent = btn.label;
         b.className = btn.primary
-          ? 'px-5 py-2.5 rounded-xl btn-gradient text-white font-bold text-sm'
-          : 'px-5 py-2.5 rounded-xl glass-pill hover:bg-white/10 text-slate-200 font-semibold text-sm';
+          ? 'px-5 py-2.5 rounded-xl btn-museum-primary font-bold text-sm'
+          : 'px-5 py-2.5 rounded-xl btn-museum-brass font-semibold text-sm';
         b.onclick = () => {
           modal.classList.add('hidden');
           if (btn.onClick) btn.onClick();
@@ -1116,14 +1366,13 @@
     function toggleMute() {
       const muted = soundFX.toggleMute();
       document.getElementById('btn-mute').textContent = muted ? '🔇' : '🔊';
-      showToast(muted ? 'Hangeffektek némítva' : 'Hangeffektek bekapcsolva', 'info');
+      showToast(muted ? 'Galériás hangeffektek némítva' : 'Galériás hangeffektek bekapcsolva', 'info');
     }
 
     function copyInviteLink() {
       const baseUrl = window.location.origin + window.location.pathname;
       const inviteUrl = `${baseUrl}?room=${encodeURIComponent(appState.roomCode)}`;
 
-      // Megbízható vágólap másolás iframe-ben és GitHub Pages-en is
       const textArea = document.createElement('textarea');
       textArea.value = inviteUrl;
       textArea.style.position = 'fixed';
@@ -1136,24 +1385,43 @@
       } catch (err) {
         if (navigator.clipboard && navigator.clipboard.writeText) {
           navigator.clipboard.writeText(inviteUrl).then(() => {
-            showToast('Meghívó link vágólapra másolva!', 'success');
+            showToast('Meghívó link a vágólapra másolva!', 'success');
           }).catch(() => {
-            showToast(`Szobakód: ${appState.roomCode}`, 'info');
+            showToast(`Teremkód: ${appState.roomCode}`, 'info');
           });
         }
       }
       document.body.removeChild(textArea);
     }
 
-    function openLightbox(src) {
-      if (!src) return;
-      document.getElementById('lightbox-img').src = src;
-      document.getElementById('lightbox-modal').classList.remove('hidden');
+    /* Kurátori Nagyító (Lightbox) kezelése */
+    function openCurrentMediaLightbox() {
+      if (appState.game.currentMedia && appState.game.currentMedia.mediaType === 'image' && appState.game.currentMedia.src) {
+        lightboxZoomed = false;
+        const img = document.getElementById('lightbox-img');
+        img.src = appState.game.currentMedia.src;
+        img.style.transform = 'scale(1)';
+        img.classList.remove('cursor-zoom-out');
+        img.classList.add('cursor-zoom-in');
+        document.getElementById('btn-lightbox-zoom-toggle').textContent = '🔎 2× Nagyítás';
+        document.getElementById('lightbox-modal').classList.remove('hidden');
+      }
     }
 
-    function openCurrentMediaLightbox() {
-      if (appState.game.currentMedia && appState.game.currentMedia.mediaType === 'image') {
-        openLightbox(appState.game.currentMedia.src);
+    function toggleLightboxZoom() {
+      const img = document.getElementById('lightbox-img');
+      const btn = document.getElementById('btn-lightbox-zoom-toggle');
+      lightboxZoomed = !lightboxZoomed;
+      if (lightboxZoomed) {
+        img.style.transform = 'scale(1.85)';
+        img.classList.remove('cursor-zoom-in');
+        img.classList.add('cursor-zoom-out');
+        btn.textContent = '🔍 Eredeti méret';
+      } else {
+        img.style.transform = 'scale(1)';
+        img.classList.remove('cursor-zoom-out');
+        img.classList.add('cursor-zoom-in');
+        btn.textContent = '🔎 2× Nagyítás';
       }
     }
 
@@ -1180,28 +1448,44 @@
       return code;
     }
 
-    function launchConfetti() {
-      const colors = ['#a855f7', '#ec4899', '#f59e0b', '#10b981', '#06b6d4'];
-      for (let i = 0; i < 45; i++) {
-        const piece = document.createElement('div');
-        piece.className = 'confetti-piece rounded-sm';
-        piece.style.left = `${Math.random() * 100}vw`;
-        piece.style.width = `${6 + Math.random() * 8}px`;
-        piece.style.height = `${8 + Math.random() * 10}px`;
-        piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-        piece.style.animationDuration = `${2.2 + Math.random() * 2}s`;
-        piece.style.animationDelay = `${Math.random() * 0.4}s`;
-        document.body.appendChild(piece);
-        setTimeout(() => piece.remove(), 4500);
+    function toRomanNumeral(num) {
+      const map = [
+        [10, 'X'], [9, 'IX'], [5, 'V'], [4, 'IV'], [1, 'I']
+      ];
+      let n = Math.max(1, num);
+      let res = '';
+      for (const [val, sym] of map) {
+        while (n >= val) {
+          res += sym;
+          n -= val;
+        }
+      }
+      return res;
+    }
+
+    function launchGoldLeafConfetti() {
+      const colors = ['#C29B48', '#E5CE94', '#9A7830', '#6E2626', '#D4AF37'];
+      for (let i = 0; i < 48; i++) {
+        const leaf = document.createElement('div');
+        leaf.className = 'gold-leaf-piece rounded-xs';
+        leaf.style.left = `${Math.random() * 100}vw`;
+        leaf.style.width = `${7 + Math.random() * 7}px`;
+        leaf.style.height = `${7 + Math.random() * 9}px`;
+        leaf.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        leaf.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
+        leaf.style.animationDuration = `${2.4 + Math.random() * 2.1}s`;
+        leaf.style.animationDelay = `${Math.random() * 0.5}s`;
+        document.body.appendChild(leaf);
+        setTimeout(() => leaf.remove(), 4800);
       }
     }
 
     /**
      * =========================================================================
-     * 4. HELYI MÉDIA KEZELŐ (MAPPA / GALÉRIA + KÉP ÁTMÉRETEZÉS + DEMO GENERÁTOR)
+     * 4. HELYI GYŰJTEMÉNY KEZELÉSE (MAPPA / GALÉRIA + KÉP OPTIMALIZÁLÁS + DEMO)
      * =========================================================================
      */
-    function handleFilesSelected(fileList, sourceType) {
+    function handleFilesSelected(fileList) {
       if (!fileList || fileList.length === 0) return;
 
       let addedImages = 0;
@@ -1236,10 +1520,10 @@
       updateLocalMediaCountsUI();
 
       if (addedImages > 0 || addedVideos > 0) {
-        showToast(`Betöltve: ${addedImages} kép és ${addedVideos} videó!`, 'success');
+        showToast(`Gyűjtemény bővítve: ${addedImages} kép és ${addedVideos} videó!`, 'success');
       }
       if (skippedLargeVideos > 0) {
-        showToast(`${skippedLargeVideos} videó meghaladta a 15 MB-os limitet, ezért kihagytuk.`, 'warning');
+        showToast(`${skippedLargeVideos} videó meghaladta a 15 MB-os korlátot, így kimaradt.`, 'warning');
       }
     }
 
@@ -1250,7 +1534,7 @@
       document.getElementById('input-folder').value = '';
       document.getElementById('input-gallery').value = '';
       updateLocalMediaCountsUI();
-      showToast('Helyi médialista kiürítve.', 'info');
+      showToast('A saját gyűjtemény kiürítve.', 'info');
     }
 
     function updateLocalMediaCountsUI() {
@@ -1261,7 +1545,6 @@
       document.getElementById('local-video-count').textContent = vidCount;
       document.getElementById('btn-clear-media').classList.toggle('hidden', imgCount + vidCount === 0);
 
-      // Saját játékos rekord frissítése és szinkronizálása
       if (appState.isHost) {
         const me = appState.game.players.find(p => p.id === appState.myId);
         if (me) {
@@ -1279,7 +1562,7 @@
     }
 
     /**
-     * Kép átméretezése kliensoldalon Canvas segítségével max 1200px-re
+     * Kliensoldali képátméretezés max. 1200px-re (EXIF metaadatoktól megfosztva az anonimitásért)
      */
     function resizeImageFileToDataUrl(file) {
       return new Promise((resolve, reject) => {
@@ -1302,7 +1585,7 @@
             canvas.height = height;
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, width, height);
-            resolve(canvas.toDataURL('image/jpeg', 0.82));
+            resolve(canvas.toDataURL('image/jpeg', 0.84));
           };
           img.onerror = reject;
           img.src = e.target.result;
@@ -1313,66 +1596,83 @@
     }
 
     /**
-     * Procedurális demo kép generálása Canvas-szal (Bot módhoz & gyors teszthez)
+     * Procedurálisan generált klasszikus / modern műalkotás (Tárlatvezetés Teszt Módhoz)
      */
-    function generateProceduralImageDataUrl(ownerName, seedIndex = 0) {
+    function generateGalleryArtworkDataUrl(seedIndex = 0) {
       const canvas = document.createElement('canvas');
-      canvas.width = 800;
-      canvas.height = 600;
+      canvas.width = 840;
+      canvas.height = 630;
       const ctx = canvas.getContext('2d');
 
-      const themes = [
-        { bg1: '#311042', bg2: '#ec4899', accent: '#fbbf24', label: '🌅 Synthwave Naplemente', emoji: '🌴' },
-        { bg1: '#0f172a', bg2: '#06b6d4', accent: '#a855f7', label: '🌌 Éjszakai Galaxis', emoji: '🚀' },
-        { bg1: '#1e1b4b', bg2: '#f59e0b', accent: '#34d399', label: '🍕 Péntek Esti Pizza', emoji: '🎉' },
-        { bg1: '#3b0764', bg2: '#db2777', accent: '#38bdf8', label: '🎮 Retro Játékterem', emoji: '🕹️' },
-        { bg1: '#064e3b', bg2: '#10b981', accent: '#fde047', label: '🏔️ Hétvégi Kirándulás', emoji: '🏕️' },
-        { bg1: '#4c0519', bg2: '#f43f5e', accent: '#fb923c', label: '🎸 Koncert Hangulat', emoji: '🔥' }
+      const styles = [
+        { bg1: '#2C3E50', bg2: '#D4A373', accent: '#FAEDCD', title: 'Őszi Duna-part', motif: '🌉', palette: ['#6E2626', '#C29B48', '#283618'] },
+        { bg1: '#1D3557', bg2: '#457B9D', accent: '#F1FAEE', title: 'Éjszakai Observatórium', motif: '🌙', palette: ['#E63946', '#F4A261', '#A8DADC'] },
+        { bg1: '#3D405B', bg2: '#E07A5F', accent: '#F2CC8F', title: 'Toszkán Délután', motif: '🏛️', palette: ['#81B29A', '#F4F1DE', '#9A7830'] },
+        { bg1: '#2B2D42', bg2: '#8D99AE', accent: '#EDF2F4', title: 'Kávéházi Csendélet', motif: '☕', palette: ['#D90429', '#C29B48', '#1B1917'] },
+        { bg1: '#1B4332', bg2: '#52B788', accent: '#D8F3DC', title: 'Botanikus Kert', motif: '🌿', palette: ['#B7E4C7', '#9A7830', '#081C15'] },
+        { bg1: '#4A1616', bg2: '#9A7830', accent: '#FAF8F5', title: 'Aranykori Kompozíció', motif: '🎻', palette: ['#E5CE94', '#1B1917', '#6E2626'] }
       ];
 
-      const theme = themes[seedIndex % themes.length];
-      const grad = ctx.createLinearGradient(0, 0, 800, 600);
-      grad.addColorStop(0, theme.bg1);
-      grad.addColorStop(1, theme.bg2);
+      const st = styles[seedIndex % styles.length];
+      const grad = ctx.createLinearGradient(0, 0, 840, 630);
+      grad.addColorStop(0, st.bg1);
+      grad.addColorStop(1, st.bg2);
       ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, 800, 600);
+      ctx.fillRect(0, 0, 840, 630);
 
-      // Absztrakt geometriai körök
-      for (let i = 0; i < 14; i++) {
-        ctx.beginPath();
-        const x = ((seedIndex * 97 + i * 131) % 760) + 20;
-        const y = ((seedIndex * 53 + i * 89) % 560) + 20;
-        const r = 25 + ((i * 19) % 85);
-        ctx.arc(x, y, r, 0, Math.PI * 2);
-        ctx.fillStyle = i % 2 === 0 ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.18)';
-        ctx.fill();
+      // Művészi ecsetvonások / geometriai formák
+      for (let i = 0; i < 18; i++) {
+        ctx.save();
+        const x = ((seedIndex * 83 + i * 127) % 780) + 30;
+        const y = ((seedIndex * 47 + i * 91) % 570) + 30;
+        const w = 45 + ((i * 23) % 130);
+        const h = 35 + ((i * 17) % 110);
+        ctx.translate(x, y);
+        ctx.rotate(((seedIndex + i) * 0.35));
+        ctx.fillStyle = st.palette[i % st.palette.length];
+        ctx.globalAlpha = 0.24;
+        ctx.fillRect(-w / 2, -h / 2, w, h);
+        ctx.restore();
       }
 
-      // Középső emoji és felirat
-      ctx.font = '120px sans-serif';
+      // Finom vászon textúra vonalak
+      ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+      ctx.lineWidth = 1;
+      for (let y = 0; y < 630; y += 6) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(840, y);
+        ctx.stroke();
+      }
+
+      // Központi motívum
+      ctx.font = '126px serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText(theme.emoji, 400, 260);
+      ctx.fillText(st.motif, 420, 265);
 
-      ctx.fillStyle = 'rgba(9, 6, 18, 0.68)';
-      ctx.roundRect ? ctx.roundRect(140, 380, 520, 110, 24) : ctx.fillRect(140, 380, 520, 110);
-      ctx.fill();
+      // Múzeumi felirat a kép alján (nem árulja el az alkotót!)
+      ctx.fillStyle = 'rgba(27, 25, 23, 0.72)';
+      ctx.fillRect(170, 405, 500, 105);
+      ctx.strokeStyle = '#C29B48';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(170, 405, 500, 105);
 
-      ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 32px Outfit, sans-serif';
-      ctx.fillText(theme.label, 400, 425);
+      ctx.fillStyle = '#FAF8F5';
+      ctx.font = 'italic bold 30px "Playfair Display", Georgia, serif';
+      ctx.fillText(`„${st.title}”`, 420, 448);
 
-      ctx.fillStyle = theme.accent;
-      ctx.font = '600 20px Inter, sans-serif';
-      ctx.fillText(`Demo felvétel #${seedIndex + 1}`, 400, 465);
+      ctx.fillStyle = '#E5CE94';
+      ctx.font = '600 17px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText(`Archív tétel • Sorozatszám: 0${(seedIndex % 9) + 1}`, 420, 485);
 
-      return canvas.toDataURL('image/jpeg', 0.85);
+      return canvas.toDataURL('image/jpeg', 0.86);
     }
 
     /**
-     * Procedurális animált Canvas videó készítése MediaRecorder-rel (Bot módhoz)
+     * Procedurális mozgókép-installáció készítése (Tárlatvezetés Teszt Módhoz)
      */
-    function generateProceduralVideoBlob(seedIndex = 0) {
+    function generateGalleryMotionVideoBlob(seedIndex = 0) {
       return new Promise((resolve) => {
         try {
           const canvas = document.createElement('canvas');
@@ -1387,7 +1687,7 @@
 
           const mimeCandidates = ['video/webm;codecs=vp9', 'video/webm', 'video/mp4'];
           const mimeType = mimeCandidates.find(m => MediaRecorder.isTypeSupported(m)) || '';
-          const stream = canvas.captureStream(25);
+          const stream = canvas.captureStream(24);
           const recorder = mimeType ? new MediaRecorder(stream, { mimeType }) : new MediaRecorder(stream);
           const chunks = [];
 
@@ -1403,43 +1703,45 @@
 
           recorder.start();
           let frame = 0;
-          const totalFrames = 45; // ~1.8 mp animált klip
-          const emojis = ['🕺', '🐱', '🛸', '🎆', '🏄'];
-          const chosenEmoji = emojis[seedIndex % emojis.length];
+          const totalFrames = 42;
+          const motifs = ['🕰️', '⛵', '🦢', '🍂', '🎻'];
+          const chosenMotif = motifs[seedIndex % motifs.length];
 
           const drawTimer = setInterval(() => {
             frame++;
             const t = frame / totalFrames;
 
             const grad = ctx.createLinearGradient(0, 0, 480, 360);
-            grad.addColorStop(0, '#1e1b4b');
-            grad.addColorStop(0.5, seedIndex % 2 === 0 ? '#9333ea' : '#db2777');
-            grad.addColorStop(1, '#f59e0b');
+            grad.addColorStop(0, '#1B1917');
+            grad.addColorStop(0.5, '#4A1616');
+            grad.addColorStop(1, '#9A7830');
             ctx.fillStyle = grad;
             ctx.fillRect(0, 0, 480, 360);
 
-            // Hullámzó körök
-            for (let i = 0; i < 6; i++) {
+            // Arany körpályák
+            for (let i = 0; i < 5; i++) {
               ctx.beginPath();
-              const cx = 240 + Math.cos(t * Math.PI * 2 + i) * (70 + i * 12);
-              const cy = 180 + Math.sin(t * Math.PI * 2 + i * 1.3) * (50 + i * 8);
-              ctx.arc(cx, cy, 18 + i * 4, 0, Math.PI * 2);
-              ctx.fillStyle = 'rgba(255,255,255,0.18)';
-              ctx.fill();
+              const cx = 240 + Math.cos(t * Math.PI * 2 + i) * (65 + i * 12);
+              const cy = 175 + Math.sin(t * Math.PI * 2 + i * 1.2) * (45 + i * 7);
+              ctx.arc(cx, cy, 16 + i * 3, 0, Math.PI * 2);
+              ctx.strokeStyle = 'rgba(229, 206, 148, 0.35)';
+              ctx.lineWidth = 2;
+              ctx.stroke();
             }
 
-            // Pattogó emoji
-            const bounceY = 175 - Math.abs(Math.sin(t * Math.PI * 3)) * 55;
-            ctx.font = '76px sans-serif';
+            const floatY = 170 - Math.sin(t * Math.PI * 2) * 28;
+            ctx.font = '74px serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillText(chosenEmoji, 240, bounceY);
+            ctx.fillText(chosenMotif, 240, floatY);
 
-            ctx.fillStyle = 'rgba(0,0,0,0.55)';
-            ctx.fillRect(80, 275, 320, 46);
-            ctx.fillStyle = '#fff';
-            ctx.font = 'bold 20px sans-serif';
-            ctx.fillText(`🎬 Animált Demo Videó #${seedIndex + 1}`, 240, 304);
+            ctx.fillStyle = 'rgba(27, 25, 23, 0.78)';
+            ctx.fillRect(75, 276, 330, 44);
+            ctx.strokeStyle = '#C29B48';
+            ctx.strokeRect(75, 276, 330, 44);
+            ctx.fillStyle = '#FAF8F5';
+            ctx.font = 'bold 17px Georgia, serif';
+            ctx.fillText(`🎞️ Mozgókép-tanulmány #${(seedIndex % 9) + 1}`, 240, 303);
 
             if (frame >= totalFrames) {
               clearInterval(drawTimer);
@@ -1453,39 +1755,39 @@
     }
 
     async function addDemoMediaToLocalUser() {
-      showToast('Minta képek és videó generálása...', 'info');
-      const baseSeed = Math.floor(Math.random() * 20);
+      showToast('Minta műalkotások előkészítése...', 'info');
+      const baseSeed = Math.floor(Math.random() * 25);
       for (let i = 0; i < 2; i++) {
-        const dataUrl = generateProceduralImageDataUrl(appState.myName || 'Én', baseSeed + i);
+        const dataUrl = generateGalleryArtworkDataUrl(baseSeed + i);
         appState.localMedia.images.push({
-          id: `demo_img_${Date.now()}_${i}`,
+          id: `demo_art_${Date.now()}_${i}`,
           dataUrl,
-          name: `Demo_kep_${i + 1}.jpg`
+          name: `Minta_alkotas_${i + 1}.jpg`
         });
       }
-      const vidResult = await generateProceduralVideoBlob(baseSeed);
+      const vidResult = await generateGalleryMotionVideoBlob(baseSeed);
       if (vidResult && vidResult.blob) {
         appState.localMedia.videos.push({
           id: `demo_vid_${Date.now()}`,
           blob: vidResult.blob,
           mimeType: vidResult.mimeType,
-          name: 'Demo_video.webm'
+          name: 'Minta_mozgokep.webm'
         });
       }
       updateLocalMediaCountsUI();
-      showToast('Minta média sikeresen hozzáadva!', 'success');
+      showToast('3 minta műalkotás hozzáadva a gyűjteményedhez!', 'success');
     }
 
     /**
      * =========================================================================
-     * 5. HÁLÓZATI KAPCSOLAT (PEERJS WEBRTC MULTIPLAYER + BOT TESZT MÓD)
+     * 5. HÁLÓZATI KAPCSOLAT (PEERJS WEBRTC P2P + TÁRLATVEZETÉS TESZT MÓD)
      * =========================================================================
      */
     function validateProfileInput() {
       const nameInput = document.getElementById('input-player-name');
       let name = nameInput.value.trim();
       if (!name) {
-        name = `Játékos_${Math.floor(10 + Math.random() * 89)}`;
+        name = `Művész_${Math.floor(10 + Math.random() * 89)}`;
         nameInput.value = name;
       }
       appState.myName = name;
@@ -1494,7 +1796,6 @@
     }
 
     function cleanupNetwork() {
-      if (spinTickInterval) clearInterval(spinTickInterval);
       if (voteCountdownInterval) clearInterval(voteCountdownInterval);
       if (currentMediaObjectUrl) {
         URL.revokeObjectURL(currentMediaObjectUrl);
@@ -1516,7 +1817,7 @@
     }
 
     /**
-     * SZOBA LÉTREHOZÁSA (HOST)
+     * KIÁLLÍTÁS MEGNYITÁSA (HOSZT / KURÁTOR)
      */
     function createRoom() {
       soundFX.init();
@@ -1525,7 +1826,7 @@
 
       const btn = document.getElementById('btn-create-room');
       btn.disabled = true;
-      btn.innerHTML = '<span>⏳ Szoba létrehozása...</span>';
+      btn.innerHTML = '<span>⏳ Kiállítóterem előkészítése...</span>';
 
       const roomCode = generateRoomCode();
       appState.isHost = true;
@@ -1536,12 +1837,12 @@
 
       peer.on('open', (id) => {
         btn.disabled = false;
-        btn.innerHTML = '<span>🚀 Szoba létrehozása</span>';
+        btn.innerHTML = '<span>✨ Kiállítás megnyitása</span>';
 
         appState.myId = id;
         appState.game = {
           phase: 'LOBBY',
-          settings: { mediaMode: 'both', totalRounds: 10, voteTime: 20 },
+          settings: { mediaMode: 'both', totalRounds: 5, voteTime: 25 },
           players: [{
             id,
             name: appState.myName,
@@ -1555,19 +1856,20 @@
             fooledCount: 0
           }],
           round: 0,
-          spinStatusText: '',
+          preparingProgress: 0,
           currentMedia: null,
           currentOwnerId: null,
           votes: {},
           roundDeltas: {},
+          ownerBonusEarned: 0,
           timeLeft: 0
         };
 
-        document.getElementById('lobby-mode-badge').textContent = '🌐 P2P Élő Szoba';
+        document.getElementById('lobby-mode-badge').textContent = '🌐 P2P Élő Tárlat';
         document.getElementById('lobby-room-code').textContent = roomCode;
         showView('lobby');
         renderLobby();
-        showToast(`Szoba létrehozva! Kód: ${roomCode}`, 'success');
+        showToast(`Kiállítóterem megnyitva! Teremkód: ${roomCode}`, 'success');
       });
 
       peer.on('connection', (conn) => {
@@ -1576,8 +1878,8 @@
 
       peer.on('error', (err) => {
         btn.disabled = false;
-        btn.innerHTML = '<span>🚀 Szoba létrehozása</span>';
-        showToast(`Hálózati hiba: ${err.type || 'Nem sikerült csatlakozni'}`, 'error');
+        btn.innerHTML = '<span>✨ Kiállítás megnyitása</span>';
+        showToast(`Hálózati hiba: ${err.type || 'Nem sikerült megnyitni a termet'}`, 'error');
       });
     }
 
@@ -1595,14 +1897,21 @@
         const leftPlayer = appState.game.players.find(p => p.id === conn.peer);
         if (leftPlayer) {
           appState.game.players = appState.game.players.filter(p => p.id !== conn.peer);
-          showToast(`${leftPlayer.avatar} ${leftPlayer.name} kilépett a szobából.`, 'warning');
-          broadcastGameState();
+          showToast(`${leftPlayer.avatar} ${leftPlayer.name} távozott a kiállításról.`, 'warning');
+
+          // Ha pont az ő művére vártunk az előkészítés alatt, sorsoljunk újra
+          if (appState.game.phase === 'PREPARING' && appState.game.currentOwnerId === conn.peer) {
+            appState.game.round = Math.max(0, appState.game.round - 1);
+            hostNextRound();
+          } else {
+            broadcastGameState();
+          }
         }
       });
     }
 
     /**
-     * CSATLAKOZÁS SZOBÁHOZ (GUEST)
+     * BELÉPÉS MEGLÉVŐ KIÁLLÍTÓTEREMBE (VENDÉG)
      */
     function joinRoom() {
       soundFX.init();
@@ -1611,7 +1920,7 @@
       const codeInput = document.getElementById('input-room-code');
       const roomCode = codeInput.value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
       if (!roomCode || roomCode.length < 4) {
-        showToast('Kérlek adj meg egy érvényes szobakódot!', 'warning');
+        showToast('Kérlek add meg a kiállítóterem érvényes kódját!', 'warning');
         codeInput.focus();
         return;
       }
@@ -1620,7 +1929,7 @@
 
       const btn = document.getElementById('btn-join-room');
       btn.disabled = true;
-      btn.innerHTML = '<span>⏳ Csatlakozás...</span>';
+      btn.innerHTML = '<span>⏳ Belépés a terembe...</span>';
 
       appState.isHost = false;
       appState.isBotMode = false;
@@ -1631,8 +1940,8 @@
       const connectTimeout = setTimeout(() => {
         if (!hostConnection || !hostConnection.open) {
           btn.disabled = false;
-          btn.innerHTML = '<span>🎯 Csatlakozás a szobához</span>';
-          showToast('Nem sikerült elérni a szobát. Ellenőrizd a szobakódot!', 'error');
+          btn.innerHTML = '<span>🎟️ Belépés a tárlatra</span>';
+          showToast('Nem sikerült elérni a kiállítótermet. Ellenőrizd a kódot!', 'error');
           cleanupNetwork();
         }
       }, 10000);
@@ -1645,7 +1954,7 @@
         conn.on('open', () => {
           clearTimeout(connectTimeout);
           btn.disabled = false;
-          btn.innerHTML = '<span>🎯 Csatlakozás a szobához</span>';
+          btn.innerHTML = '<span>🎟️ Belépés a tárlatra</span>';
 
           conn.send({
             type: 'JOIN_ROOM',
@@ -1661,7 +1970,7 @@
           document.getElementById('lobby-mode-badge').textContent = '🌐 P2P Vendég';
           document.getElementById('lobby-room-code').textContent = roomCode;
           showView('lobby');
-          showToast(`Sikeresen csatlakoztál a(z) ${roomCode} szobához!`, 'success');
+          showToast(`Sikeresen beléptél a(z) ${roomCode} kiállítóterembe!`, 'success');
         });
 
         conn.on('data', (msg) => {
@@ -1670,11 +1979,11 @@
 
         conn.on('close', () => {
           showCustomModal({
-            icon: '🔌',
-            title: 'A kapcsolat megszakadt',
-            message: 'A szobagazda bezárta a szobát vagy megszakadt az internetkapcsolat.',
+            icon: '🏛️',
+            title: 'A kiállítás bezárt',
+            message: 'A kurátor lezárta a kiállítótermet vagy megszakadt a hálózati kapcsolat.',
             buttons: [{
-              label: 'Vissza a főoldalra',
+              label: 'Vissza az előcsarnokba',
               primary: true,
               onClick: () => leaveRoomImmediate()
             }]
@@ -1682,16 +1991,16 @@
         });
       });
 
-      peer.on('error', (err) => {
+      peer.on('error', () => {
         clearTimeout(connectTimeout);
         btn.disabled = false;
-        btn.innerHTML = '<span>🎯 Csatlakozás a szobához</span>';
-        showToast('A megadott szobakód nem található!', 'error');
+        btn.innerHTML = '<span>🎟️ Belépés a tárlatra</span>';
+        showToast('A megadott teremkód nem található!', 'error');
       });
     }
 
     /**
-     * TESZT MÓD (BOTOKKAL ÉS GENERÁLT MÉDIÁVAL)
+     * TÁRLATVEZETÉS TESZT MÓD (3 AI MŰVÉSSZEL: Kovács Eszter, Szabó Márton, Tóth Lilla)
      */
     async function startBotTestMode() {
       soundFX.init();
@@ -1700,43 +2009,43 @@
 
       const btn = document.getElementById('btn-bot-mode');
       btn.disabled = true;
-      btn.innerHTML = '<span>⏳ Botok és demo videók előkészítése...</span>';
+      btn.innerHTML = '<span>⏳ Tárlat és műalkotások előkészítése...</span>';
 
       appState.isHost = true;
       appState.isBotMode = true;
-      appState.roomCode = 'BOTS';
+      appState.roomCode = 'TÁRLAT';
       appState.myId = 'player_local_human';
 
-      // Ha a játékosnak még nincs saját képe/videója, adjunk neki 3 demo fájlt, hogy ő is sorra kerülhessen
+      // Ha a játékosnak még nincs saját fájlja, generálunk neki 3 minta műalkotást
       if (appState.localMedia.images.length === 0 && appState.localMedia.videos.length === 0) {
         for (let i = 0; i < 2; i++) {
           appState.localMedia.images.push({
-            id: `human_demo_img_${i}`,
-            dataUrl: generateProceduralImageDataUrl(appState.myName, i + 10),
-            name: `Sajat_demo_${i + 1}.jpg`
+            id: `human_art_${i}`,
+            dataUrl: generateGalleryArtworkDataUrl(i + 12),
+            name: `Sajat_alkotas_${i + 1}.jpg`
           });
         }
-        const vid = await generateProceduralVideoBlob(10);
+        const vid = await generateGalleryMotionVideoBlob(12);
         if (vid) {
           appState.localMedia.videos.push({
-            id: 'human_demo_vid_0',
+            id: 'human_vid_0',
             blob: vid.blob,
             mimeType: vid.mimeType,
-            name: 'Sajat_demo_video.webm'
+            name: 'Sajat_mozgokep.webm'
           });
         }
         updateLocalMediaCountsUI();
       }
 
-      const botProfiles = [
-        { id: 'bot_1', name: 'Bence (Bot)', avatar: '🦊' },
-        { id: 'bot_2', name: 'Zsófi (Bot)', avatar: '🦄' },
-        { id: 'bot_3', name: 'Máté (Bot)', avatar: '🚀' }
+      const aiArtists = [
+        { id: 'ai_eszter', name: 'Kovács Eszter', avatar: '🎨' },
+        { id: 'ai_marton', name: 'Szabó Márton', avatar: '📷' },
+        { id: 'ai_lilla', name: 'Tóth Lilla', avatar: '🎻' }
       ];
 
       appState.game = {
         phase: 'LOBBY',
-        settings: { mediaMode: 'both', totalRounds: 5, voteTime: 15 },
+        settings: { mediaMode: 'both', totalRounds: 5, voteTime: 25 },
         players: [
           {
             id: appState.myId,
@@ -1750,34 +2059,35 @@
             correctGuesses: 0,
             fooledCount: 0
           },
-          ...botProfiles.map(b => ({
-            ...b,
+          ...aiArtists.map(bot => ({
+            ...bot,
             isHost: false,
             isBot: true,
-            imageCount: 4,
-            videoCount: 2,
+            imageCount: 6,
+            videoCount: 3,
             score: 0,
             correctGuesses: 0,
             fooledCount: 0
           }))
         ],
         round: 0,
-        spinStatusText: '',
+        preparingProgress: 0,
         currentMedia: null,
         currentOwnerId: null,
         votes: {},
         roundDeltas: {},
+        ownerBonusEarned: 0,
         timeLeft: 0
       };
 
       btn.disabled = false;
-      btn.innerHTML = '<span class="text-xl">🤖</span><span>Teszt mód (Botokkal &amp; Demo médiával)</span>';
+      btn.innerHTML = '<span class="text-xl">🎭</span><span>Tárlatvezetés Teszt Mód (AI művészekkel)</span>';
 
-      document.getElementById('lobby-mode-badge').textContent = '🤖 Bot Teszt Mód';
-      document.getElementById('lobby-room-code').textContent = 'BOTS';
+      document.getElementById('lobby-mode-badge').textContent = '🎭 Tárlatvezetés Teszt';
+      document.getElementById('lobby-room-code').textContent = 'TÁRLAT';
       showView('lobby');
       renderLobby();
-      showToast('Teszt mód elindult 3 bottal! Indítsd el a játékot vagy állítsd a szabályokat.', 'success');
+      showToast('Tárlatvezetés Teszt Mód megnyílt 3 AI művésszel!', 'success');
     }
 
     function handleLogoClick() {
@@ -1789,8 +2099,8 @@
     function confirmLeaveRoom() {
       showCustomModal({
         icon: '🚪',
-        title: 'Kilépés a szobából?',
-        message: 'Biztosan kilépsz az aktuális játékból és visszatérsz a főoldalra?',
+        title: 'Távozás a kiállításról?',
+        message: 'Biztosan kilépsz az aktuális kiállítóteremből és visszatérsz az előcsarnokba?',
         buttons: [
           { label: 'Maradok', primary: false },
           { label: 'Kilépés', primary: true, onClick: () => leaveRoomImmediate() }
@@ -1808,19 +2118,18 @@
 
     /**
      * =========================================================================
-     * 6. P2P ÜZENETKEZELÉS ÉS CHUNKOLT VIDEÓ ÁTVITEL
+     * 6. P2P ÜZENETKEZELÉS (ANTI-SPOILER & CHUNKOLT VIDEÓ ÁTVITEL)
      * =========================================================================
      */
     function broadcastGameState() {
       if (!appState.isHost) return;
 
-      // Biztonság: VOTING fázisban a vendégek nem kapják meg a currentOwnerId mezőt, hogy ne lehessen csalni!
+      // ANTI-SPOILER ARCHITEKTÚRA:
+      // A kliensek KIZÁRÓLAG az EXHIBIT_REVEAL vagy GAME_OVER fázisban kapják meg a currentOwnerId-t!
+      const isPublicReveal = appState.game.phase === 'EXHIBIT_REVEAL' || appState.game.phase === 'GAME_OVER';
       const sanitizedGame = {
         ...appState.game,
-        currentOwnerId: appState.game.phase === 'REVEAL' || appState.game.phase === 'GAME_OVER'
-          ? appState.game.currentOwnerId
-          : null,
-        // A media src-t külön küldjük át, hogy a STATE_SYNC mindig villámgyors legyen
+        currentOwnerId: isPublicReveal ? appState.game.currentOwnerId : null,
         currentMedia: appState.game.currentMedia
           ? { mediaType: appState.game.currentMedia.mediaType, hasMedia: true }
           : null
@@ -1828,9 +2137,7 @@
 
       const payload = { type: 'STATE_SYNC', game: sanitizedGame };
       Object.values(guestConnections).forEach(conn => {
-        if (conn.open) {
-          conn.send(payload);
-        }
+        if (conn.open) conn.send(payload);
       });
 
       renderCurrentPhase();
@@ -1872,7 +2179,6 @@
               data: slice
             });
           });
-          // Rövid szünet a böngésző hálózati pufferének kímélésére
           if (i % 8 === 0) await new Promise(r => setTimeout(r, 12));
         }
 
@@ -1891,8 +2197,8 @@
           if (!appState.game.players.some(existing => existing.id === senderId)) {
             appState.game.players.push({
               id: senderId,
-              name: (p.name || 'Vendég').slice(0, 18),
-              avatar: AVATARS.includes(p.avatar) ? p.avatar : '🎲',
+              name: (p.name || 'Vendég').slice(0, 20),
+              avatar: GALLERY_EMBLEMS.includes(p.avatar) ? p.avatar : '🎨',
               isHost: false,
               isBot: false,
               imageCount: p.imageCount || 0,
@@ -1901,7 +2207,7 @@
               correctGuesses: 0,
               fooledCount: 0
             });
-            showToast(`${p.avatar} ${p.name} csatlakozott a szobához!`, 'success');
+            showToast(`${p.avatar} ${p.name} belépett a kiállítóterembe!`, 'success');
             broadcastGameState();
           }
           break;
@@ -1918,7 +2224,7 @@
         }
 
         case 'SUBMIT_MEDIA_IMAGE': {
-          if (appState.game.phase === 'SPINNING' && senderId === appState.game.currentOwnerId) {
+          if (appState.game.phase === 'PREPARING' && senderId === appState.game.currentOwnerId) {
             onHostMediaReady({
               mediaType: 'image',
               src: msg.dataUrl
@@ -1943,8 +2249,7 @@
           if (tr) {
             tr.chunks[msg.index] = msg.data;
             tr.received++;
-            const pct = Math.min(99, Math.round((tr.received / tr.totalChunks) * 100));
-            appState.game.spinStatusText = `Videó fogadása... ${pct}%`;
+            appState.game.preparingProgress = Math.min(99, Math.round((tr.received / tr.totalChunks) * 100));
             broadcastGameState();
           }
           break;
@@ -1957,7 +2262,7 @@
             const blob = base64ToBlob(fullBase64, tr.mimeType);
             delete incomingTransfers[msg.transferId];
 
-            if (appState.game.phase === 'SPINNING' && tr.senderId === appState.game.currentOwnerId) {
+            if (appState.game.phase === 'PREPARING' && tr.senderId === appState.game.currentOwnerId) {
               if (currentMediaObjectUrl) URL.revokeObjectURL(currentMediaObjectUrl);
               currentMediaObjectUrl = URL.createObjectURL(blob);
               onHostMediaReady({
@@ -1990,7 +2295,6 @@
           const preservedMedia = appState.game.currentMedia;
 
           appState.game = msg.game;
-          // Megőrizzük a már letöltött helyi src-t (dataUrl vagy blob URL)
           if (incomingMedia && incomingMedia.hasMedia && preservedMedia) {
             appState.game.currentMedia = preservedMedia;
           } else if (!incomingMedia) {
@@ -1998,9 +2302,9 @@
           }
 
           if (prevPhase !== appState.game.phase) {
-            if (appState.game.phase === 'SPINNING') startLocalSpinEffects();
-            if (appState.game.phase === 'REVEAL') soundFX.playReveal();
-            if (appState.game.phase === 'GAME_OVER') launchConfetti();
+            if (appState.game.phase === 'VOTING') soundFX.playCurtainReveal();
+            if (appState.game.phase === 'EXHIBIT_REVEAL') soundFX.playRevealChord();
+            if (appState.game.phase === 'GAME_OVER') launchGoldLeafConfetti();
           }
 
           renderCurrentPhase();
@@ -2008,7 +2312,7 @@
         }
 
         case 'REQUEST_RANDOM_MEDIA': {
-          // A Host kisorsolt minket! Küldjünk vissza 1 véletlenszerű képet vagy videót
+          // A kurátor titokban kiválasztotta egyik művünket!
           await supplyLocalMediaToHost(msg.preferredType);
           break;
         }
@@ -2018,7 +2322,7 @@
             mediaType: 'image',
             src: msg.dataUrl
           };
-          if (appState.game.phase === 'VOTING') renderVotingStage();
+          if (appState.game.phase === 'VOTING') renderExhibitionStage();
           break;
         }
 
@@ -2055,7 +2359,7 @@
               src: currentMediaObjectUrl,
               mimeType: tr.mimeType
             };
-            if (appState.game.phase === 'VOTING') renderVotingStage();
+            if (appState.game.phase === 'VOTING') renderExhibitionStage();
           }
           break;
         }
@@ -2066,8 +2370,7 @@
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onloadend = () => {
-          const res = reader.result;
-          const base64 = res.split(',')[1];
+          const base64 = reader.result.split(',')[1];
           resolve(base64);
         };
         reader.onerror = reject;
@@ -2081,21 +2384,20 @@
       for (let i = 0; i < byteChars.length; i++) {
         byteNumbers[i] = byteChars.charCodeAt(i);
       }
-      const byteArray = new Uint8Array(byteNumbers);
-      return new Blob([byteArray], { type: mimeType });
+      return new Blob([new Uint8Array(byteNumbers)], { type: mimeType });
     }
 
     /**
      * =========================================================================
-     * 7. JÁTÉKMENET LOGIKA (HOST MOTOR + SZAVAZÁS + PONTOZÁS)
+     * 7. KIÁLLÍTÁSI JÁTÉKMENET (KURÁTOR MOTOR, SZAVAZÁS & PONTOZÁS)
      * =========================================================================
      */
     function updateSetting(key, value) {
       if (!appState.isHost) {
-        showToast('Csak a szobagazda módosíthatja a beállításokat!', 'warning');
+        showToast('Csak a kurátor (szobagazda) módosíthatja a kiállítás szabályait!', 'warning');
         return;
       }
-      soundFX.playTick(1.1);
+      soundFX.playSubtleClick(580);
       appState.game.settings[key] = value;
       syncSettingsUI();
       broadcastGameState();
@@ -2112,10 +2414,10 @@
           (sKey === 'voteTime' && Number(sVal) === Number(voteTime));
 
         btn.disabled = !appState.isHost;
-        btn.className = `setting-btn py-2.5 px-2 rounded-2xl border text-xs sm:text-sm font-bold transition ${
+        btn.className = `setting-btn py-2.5 px-2 rounded-xl border text-xs sm:text-sm font-bold transition ${
           isActive
-            ? 'bg-gradient-to-r from-purple-600/60 to-pink-600/60 border-pink-400 text-white shadow-lg'
-            : 'bg-slate-950/60 border-white/10 text-slate-400 hover:text-white'
+            ? 'bg-[#6E2626] text-[#FAF8F5] border-[#C29B48] shadow-sm'
+            : 'bg-[#FAF8F5] text-[#57534E] border-[#C29B48]/40 hover:border-[#6E2626]'
         } ${!appState.isHost ? 'cursor-not-allowed opacity-85' : ''}`;
       });
     }
@@ -2141,13 +2443,13 @@
           both: 'képeket vagy videókat'
         };
         showCustomModal({
-          icon: '📂',
-          title: 'Nincs betöltött média!',
-          message: `A jelenlegi beállítás szerint legalább egy játékosnak hozzá kell adnia ${modeLabels[appState.game.settings.mediaMode]} a játék indításához.`,
+          icon: '🖼️',
+          title: 'Üres a kiállítóterem!',
+          message: `A kiválasztott beállítás alapján legalább egy művésznek csatolnia kell ${modeLabels[appState.game.settings.mediaMode]} a tárlat megnyitásához.`,
           buttons: [
             { label: 'Rendben', primary: false },
             {
-              label: '✨ Minta média betöltése most',
+              label: '✨ Minta alkotások betöltése',
               primary: true,
               onClick: async () => {
                 await addDemoMediaToLocalUser();
@@ -2158,7 +2460,6 @@
         return;
       }
 
-      // Pontszámok nullázása új játék elején
       appState.game.players.forEach(p => {
         p.score = 0;
         p.correctGuesses = 0;
@@ -2168,35 +2469,33 @@
       hostNextRound();
     }
 
-    let spinMinTimeElapsed = false;
+    let prepMinTimeElapsed = false;
     let pendingReadyMedia = null;
 
     async function hostNextRound() {
       if (!appState.isHost) return;
 
       const { totalRounds, mediaMode } = appState.game.settings;
-      if (totalRounds > 0 && appState.game.round >= totalRounds) {
+      if (appState.game.round >= totalRounds) {
         hostFinishGame();
         return;
       }
 
       const eligible = getEligiblePlayersForMediaMode();
       if (eligible.length === 0) {
-        showToast('Egyik játékosnak sincs a beállításnak megfelelő médiája!', 'error');
+        showToast('Egyik kiállítónak sincs a beállításnak megfelelő fájlja!', 'error');
         return;
       }
 
-      // Véletlenszerű tulajdonos kisorsolása
+      // Titkos sorsolás: semmilyen vizuális jelzés nem árulja el, kit választott a kurátor!
       const chosenOwner = eligible[Math.floor(Math.random() * eligible.length)];
 
-      // Milyen típust kérjünk tőle?
       let chosenMediaType = 'image';
       if (mediaMode === 'image') {
         chosenMediaType = 'image';
       } else if (mediaMode === 'video') {
         chosenMediaType = 'video';
       } else {
-        // Mindkettő esetén ha mindkettő van neki, 50-50% esély
         if (chosenOwner.imageCount > 0 && chosenOwner.videoCount > 0) {
           chosenMediaType = Math.random() < 0.5 ? 'image' : 'video';
         } else {
@@ -2205,31 +2504,28 @@
       }
 
       appState.game.round += 1;
-      appState.game.phase = 'SPINNING';
+      appState.game.phase = 'PREPARING';
       appState.game.currentOwnerId = chosenOwner.id;
       appState.game.currentMedia = null;
       appState.game.votes = {};
       appState.game.roundDeltas = {};
-      appState.game.spinStatusText = 'Az üveg pörög...';
+      appState.game.ownerBonusEarned = 0;
+      appState.game.preparingProgress = 0;
 
-      spinMinTimeElapsed = false;
+      prepMinTimeElapsed = false;
       pendingReadyMedia = null;
 
       broadcastGameState();
-      startLocalSpinEffects();
 
-      // Minimum 2.8 másodperces látványos üvegpörgetés
+      // Rövid kurátori átvezető szünet (1.7 mp), amíg a bársonyfüggöny összezáródik
       setTimeout(() => {
-        spinMinTimeElapsed = true;
+        prepMinTimeElapsed = true;
         if (pendingReadyMedia) {
           transitionHostToVoting(pendingReadyMedia);
-        } else {
-          appState.game.spinStatusText = 'Rejtélyes felvétel betöltése...';
-          broadcastGameState();
         }
-      }, 2800);
+      }, 1700);
 
-      // Média bekérése a kisorsolt játékostól
+      // Műtárgy bekérése a kisorsolt kiállítótól
       if (chosenOwner.id === appState.myId) {
         await supplyLocalMediaToHost(chosenMediaType);
       } else if (chosenOwner.isBot) {
@@ -2239,7 +2535,6 @@
         if (conn && conn.open) {
           conn.send({ type: 'REQUEST_RANDOM_MEDIA', preferredType: chosenMediaType });
         } else {
-          showToast('A kisorsolt játékos lecsatlakozott, újrapörgetés...', 'warning');
           appState.game.round -= 1;
           hostNextRound();
         }
@@ -2247,7 +2542,7 @@
     }
 
     function onHostMediaReady(mediaObj) {
-      if (spinMinTimeElapsed) {
+      if (prepMinTimeElapsed) {
         transitionHostToVoting(mediaObj);
       } else {
         pendingReadyMedia = mediaObj;
@@ -2259,16 +2554,14 @@
       appState.game.phase = 'VOTING';
       appState.game.timeLeft = appState.game.settings.voteTime;
 
-      // Média szétküldése a vendégeknek
+      soundFX.playCurtainReveal();
       await broadcastMediaToGuests(mediaObj);
       broadcastGameState();
 
-      // Ha Bot módban vagyunk, a botok is szavaznak véletlenszerű időzítéssel
       if (appState.isBotMode) {
         scheduleBotVotes();
       }
 
-      // Visszaszámláló indítása a Hostnál
       if (voteCountdownInterval) clearInterval(voteCountdownInterval);
       voteCountdownInterval = setInterval(() => {
         if (appState.game.phase !== 'VOTING') {
@@ -2277,7 +2570,7 @@
         }
         appState.game.timeLeft -= 1;
         if (appState.game.timeLeft <= 5 && appState.game.timeLeft > 0) {
-          soundFX.playCountdown();
+          soundFX.playCountdownTick();
         }
         broadcastGameState();
 
@@ -2289,7 +2582,7 @@
     }
 
     /**
-     * Helyi játékos véletlenszerű fájljának előkészítése és elküldése a Hostnak
+     * Helyi játékos véletlenszerű fájljának előkészítése és beküldése
      */
     async function supplyLocalMediaToHost(preferredType) {
       const pool = preferredType === 'video' && appState.localMedia.videos.length > 0
@@ -2298,7 +2591,6 @@
 
       if (pool.length === 0) return;
 
-      // Próbálunk még nem használt fájlt választani
       let unused = pool.filter(item => !appState.localMedia.usedIds.has(item.id));
       if (unused.length === 0) {
         pool.forEach(item => appState.localMedia.usedIds.delete(item.id));
@@ -2322,7 +2614,6 @@
             mimeType
           });
         } else if (hostConnection && hostConnection.open) {
-          // Chunkolt küldés a Host felé
           const base64 = await blobToBase64(videoBlob);
           const totalChunks = Math.ceil(base64.length / CHUNK_SIZE);
           const transferId = `gvid_${Date.now()}`;
@@ -2357,12 +2648,12 @@
     }
 
     /**
-     * Bot média generálása Teszt módban
+     * AI művész alkotásának előállítása Tárlatvezetés Teszt Módban
      */
     async function supplyBotMediaToHost(botPlayer, preferredType) {
-      const seed = appState.game.round * 7 + botPlayer.name.charCodeAt(0);
+      const seed = appState.game.round * 11 + botPlayer.name.charCodeAt(0);
       if (preferredType === 'video') {
-        const vid = await generateProceduralVideoBlob(seed);
+        const vid = await generateGalleryMotionVideoBlob(seed);
         if (vid) {
           if (currentMediaObjectUrl) URL.revokeObjectURL(currentMediaObjectUrl);
           currentMediaObjectUrl = URL.createObjectURL(vid.blob);
@@ -2375,26 +2666,25 @@
           return;
         }
       }
-      const dataUrl = generateProceduralImageDataUrl(botPlayer.name, seed);
+      const dataUrl = generateGalleryArtworkDataUrl(seed);
       onHostMediaReady({ mediaType: 'image', src: dataUrl });
     }
 
     /**
-     * Szavazat leadása
+     * Tipp leadása
      */
     function castVote(targetPlayerId) {
       if (appState.game.phase !== 'VOTING') return;
-      soundFX.playVote();
+      soundFX.playVoteStamp();
 
       if (appState.isHost) {
         registerVote(appState.myId, targetPlayerId);
       } else if (hostConnection && hostConnection.open) {
-        // Optimista helyi UI frissítés
         appState.game.votes[appState.myId] = {
           targetId: targetPlayerId,
           timeLeft: appState.game.timeLeft
         };
-        renderVotingStage();
+        renderExhibitionStage();
         hostConnection.send({ type: 'CAST_VOTE', targetId: targetPlayerId });
       }
     }
@@ -2408,7 +2698,6 @@
 
       broadcastGameState();
 
-      // Ha mindenki szavazott, azonnal felfedés!
       const totalPlayers = appState.game.players.length;
       const votesCast = Object.keys(appState.game.votes).length;
       if (votesCast >= totalPlayers) {
@@ -2422,10 +2711,9 @@
       const allIds = appState.game.players.map(p => p.id);
 
       bots.forEach((bot, idx) => {
-        const delay = 1800 + idx * 1400 + Math.random() * 1500;
+        const delay = 2200 + idx * 1500 + Math.random() * 1800;
         setTimeout(() => {
           if (appState.game.phase !== 'VOTING') return;
-          // A bot 45% eséllyel eltalálja, különben másra szavaz
           let pick = appState.game.currentOwnerId;
           if (Math.random() > 0.45) {
             const others = allIds.filter(id => id !== bot.id);
@@ -2437,13 +2725,15 @@
     }
 
     /**
-     * Felfedés és pontszámítás
+     * Leleplezés és pontszámítás:
+     * - Helyes tipp: +1000 pont + gyorsasági bónusz (max +250 pont)
+     * - Alkotó bónusz: +300 pont minden egyes megtévesztett játékos után
      */
     function hostRevealRound() {
-      if (!appState.isHost || appState.game.phase === 'REVEAL') return;
+      if (!appState.isHost || appState.game.phase === 'EXHIBIT_REVEAL') return;
 
       const ownerId = appState.game.currentOwnerId;
-      const maxTime = appState.game.settings.voteTime || 20;
+      const maxTime = appState.game.settings.voteTime || 25;
       const deltas = {};
       appState.game.players.forEach(p => { deltas[p.id] = 0; });
 
@@ -2451,46 +2741,39 @@
 
       appState.game.players.forEach(voter => {
         const voteRecord = appState.game.votes[voter.id];
-        if (!voteRecord) return;
-
-        if (voter.id === ownerId) {
-          // A tulajdonos maga is szavazhat elterelésként, de saját magáért nem kap tippelési pontot
-          return;
-        }
+        if (!voteRecord || voter.id === ownerId) return;
 
         if (voteRecord.targetId === ownerId) {
-          // Helyes tipp: +1000 pont + gyorsasági bónusz (max +500 pont)
-          const speedBonus = Math.round((Math.max(0, voteRecord.timeLeft) / maxTime) * 500);
+          const speedBonus = Math.round((Math.max(0, voteRecord.timeLeft) / maxTime) * 250);
           const pts = 1000 + speedBonus;
           deltas[voter.id] += pts;
           voter.score += pts;
           voter.correctGuesses = (voter.correctGuesses || 0) + 1;
         } else {
-          // Megtévesztett játékos!
           fooledPlayersCount++;
         }
       });
 
-      // Tulajdonos bónusz: +300 pont minden megtévesztett játékos után
       const ownerPlayer = appState.game.players.find(p => p.id === ownerId);
-      if (ownerPlayer && fooledPlayersCount > 0) {
-        const ownerBonus = fooledPlayersCount * 300;
+      const ownerBonus = fooledPlayersCount * 300;
+      if (ownerPlayer && ownerBonus > 0) {
         deltas[ownerId] += ownerBonus;
         ownerPlayer.score += ownerBonus;
         ownerPlayer.fooledCount = (ownerPlayer.fooledCount || 0) + fooledPlayersCount;
       }
 
       appState.game.roundDeltas = deltas;
-      appState.game.phase = 'REVEAL';
+      appState.game.ownerBonusEarned = ownerBonus;
+      appState.game.phase = 'EXHIBIT_REVEAL';
 
-      soundFX.playReveal();
+      soundFX.playRevealChord();
       broadcastGameState();
     }
 
     function hostFinishGame() {
       if (!appState.isHost) return;
       appState.game.phase = 'GAME_OVER';
-      launchConfetti();
+      launchGoldLeafConfetti();
       broadcastGameState();
     }
 
@@ -2502,12 +2785,13 @@
       appState.game.currentOwnerId = null;
       appState.game.votes = {};
       appState.game.roundDeltas = {};
+      appState.game.ownerBonusEarned = 0;
       broadcastGameState();
     }
 
     /**
      * =========================================================================
-     * 8. VIZUÁLIS RENDERELÉS (LOBBY, KÖR ALAKÚ ARÉNA, SZAVAZÁS, FELFEDÉS)
+     * 8. VIZUÁLIS RENDERELÉS (ELŐKÉSZÍTŐ, KIÁLLÍTÓTÉR, 3D KATALÓGUSCÉDULA, GÁLA)
      * =========================================================================
      */
     function renderCurrentPhase() {
@@ -2525,44 +2809,28 @@
         return;
       }
 
-      // SPINNING, VOTING vagy REVEAL
+      // PREPARING, VOTING vagy EXHIBIT_REVEAL
       showView('game');
-
-      const totalRounds = appState.game.settings.totalRounds;
-      document.getElementById('game-round-badge').textContent =
-        totalRounds > 0 ? `${appState.game.round} / ${totalRounds}. kör` : `${appState.game.round}. kör (∞)`;
-
-      ['stage-spin', 'stage-vote', 'stage-reveal'].forEach(id => {
-        document.getElementById(id).classList.add('hidden');
-      });
-
-      document.getElementById('game-vote-progress-pill').classList.toggle('hidden', phase !== 'VOTING');
-      document.getElementById('game-timer-pill').classList.toggle('hidden', phase !== 'VOTING');
-
-      if (phase === 'SPINNING') {
-        document.getElementById('game-phase-title').textContent = '🍾 Üveg pörgetése...';
-        document.getElementById('stage-spin').classList.remove('hidden');
-        renderSpinStage();
-      } else if (phase === 'VOTING') {
-        document.getElementById('game-phase-title').textContent = '🕵️ Kié ez a felvétel?';
-        document.getElementById('stage-vote').classList.remove('hidden');
-        renderVotingStage();
-      } else if (phase === 'REVEAL') {
-        document.getElementById('game-phase-title').textContent = '✨ Leleplezés & Pontok';
-        document.getElementById('stage-reveal').classList.remove('hidden');
-        renderRevealStage();
-      }
+      renderExhibitionStage();
     }
 
     function renderLobby() {
       syncSettingsUI();
 
       const players = appState.game.players;
+      const mode = appState.game.settings.mediaMode;
       document.getElementById('lobby-player-count').textContent = players.length;
 
+      const modeTextMap = {
+        image: 'Csak képek számítanak',
+        video: 'Csak videók számítanak',
+        both: 'Képek és videók is számítanak'
+      };
+      document.getElementById('lobby-media-filter-hint').textContent = modeTextMap[mode] || '';
+
       document.getElementById('settings-lock-badge').textContent = appState.isHost
-        ? '👑 Te állítod a szabályokat'
-        : '👑 Szobagazda állítja';
+        ? '👑 Te vagy a kurátor'
+        : '👑 Kurátor állítja';
 
       document.getElementById('btn-start-game').classList.toggle('hidden', !appState.isHost);
       document.getElementById('guest-waiting-msg').classList.toggle('hidden', appState.isHost);
@@ -2570,336 +2838,317 @@
       const listEl = document.getElementById('lobby-players-list');
       listEl.innerHTML = players.map(p => {
         const isMe = p.id === appState.myId;
-        const totalMedia = (p.imageCount || 0) + (p.videoCount || 0);
+        const eligibleCount = mode === 'image'
+          ? (p.imageCount || 0)
+          : mode === 'video'
+            ? (p.videoCount || 0)
+            : (p.imageCount || 0) + (p.videoCount || 0);
+
         return `
-          <div class="p-3 rounded-2xl bg-slate-950/60 border ${isMe ? 'border-pink-500/40' : 'border-white/10'} flex items-center justify-between gap-3">
+          <div class="p-3 rounded-xl bg-[#FAF8F5] border ${isMe ? 'border-[#6E2626]' : 'border-[#C29B48]/40'} flex items-center justify-between gap-3 shadow-xs">
             <div class="flex items-center gap-3 min-w-0">
-              <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-purple-600/30 to-pink-600/30 border border-white/10 flex items-center justify-center text-2xl shrink-0">
+              <div class="w-11 h-11 rounded-xl bg-[#ECE7DD] border border-[#C29B48]/50 flex items-center justify-center text-2xl shrink-0">
                 ${escapeHtml(p.avatar)}
               </div>
               <div class="min-w-0">
-                <div class="font-bold text-sm text-white truncate flex items-center gap-1.5">
+                <div class="font-bold text-sm text-[#1B1917] truncate flex items-center gap-1.5">
                   <span>${escapeHtml(p.name)}</span>
-                  ${p.isHost ? '<span title="Szobagazda">👑</span>' : ''}
-                  ${isMe ? '<span class="text-[10px] px-1.5 py-0.5 rounded bg-pink-500/20 text-pink-300">Te</span>' : ''}
+                  ${p.isHost ? '<span title="Kurátor">👑</span>' : ''}
+                  ${isMe ? '<span class="text-[10px] px-1.5 py-0.5 rounded bg-[#6E2626] text-white font-semibold">Te</span>' : ''}
                 </div>
-                <div class="text-xs text-slate-400 flex items-center gap-2 mt-0.5">
-                  <span>🖼️ ${p.imageCount || 0}</span>
-                  <span>🎬 ${p.videoCount || 0}</span>
+                <div class="text-xs text-[#57534E] flex items-center gap-2.5 mt-0.5">
+                  <span>🖼️ ${p.imageCount || 0} kép</span>
+                  <span>🎞️ ${p.videoCount || 0} videó</span>
                 </div>
               </div>
             </div>
 
-            <span class="text-xs font-bold px-2.5 py-1 rounded-xl shrink-0 ${
-              totalMedia > 0
-                ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                : 'bg-slate-800 text-slate-400'
+            <span class="text-xs font-bold px-2.5 py-1 rounded-lg shrink-0 ${
+              eligibleCount > 0
+                ? 'bg-emerald-900/10 text-emerald-800 border border-emerald-700/25'
+                : 'bg-stone-200/70 text-stone-500'
             }">
-              ${totalMedia > 0 ? 'Kész ✅' : 'Nincs fájl'}
+              ${eligibleCount > 0 ? `${eligibleCount} mű kész ✓` : 'Még nincs mű'}
             </span>
           </div>
         `;
       }).join('');
     }
 
-    /**
-     * Kör alakú játékos elhelyezés segédfüggvény (Spin & Reveal fázisokhoz)
-     */
-    function renderCircularPlayers(containerId, highlightPlayerId = null, radiusPercent = 39) {
-      const container = document.getElementById(containerId);
-      const players = appState.game.players;
-      const count = players.length;
+    function renderExhibitionStage() {
+      const {
+        phase, round, settings, timeLeft, preparingProgress,
+        currentMedia, players, votes, currentOwnerId, roundDeltas, ownerBonusEarned
+      } = appState.game;
 
-      container.innerHTML = players.map((p, index) => {
-        // 12 órától indulunk (-PI/2)
-        const angle = (2 * Math.PI * index) / count - Math.PI / 2;
-        const left = 50 + radiusPercent * Math.cos(angle);
-        const top = 50 + radiusPercent * Math.sin(angle);
-        const isHighlighted = highlightPlayerId && p.id === highlightPlayerId;
+      // Római számos műtárgy jelző a fejlécben
+      document.getElementById('game-round-badge').textContent =
+        `${toRomanNumeral(round)} / ${toRomanNumeral(settings.totalRounds)} Műtárgy`;
 
-        return `
-          <div
-            style="left: ${left}%; top: ${top}%; transform: translate(-50%, -50%);"
-            class="absolute flex flex-col items-center transition-all duration-500 ${isHighlighted ? 'scale-115 z-20' : 'z-10'}"
-          >
-            <div class="relative w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center text-2xl sm:text-3xl shadow-xl border-2 ${
-              isHighlighted
-                ? 'bg-amber-500/30 border-amber-400 neon-glow-amber pulse-ring'
-                : 'bg-slate-900/90 border-purple-400/40'
-            }">
-              ${escapeHtml(p.avatar)}
-            </div>
-            <span class="mt-1.5 px-2.5 py-0.5 rounded-full text-[11px] sm:text-xs font-bold max-w-[96px] truncate shadow-md ${
-              isHighlighted
-                ? 'bg-amber-400 text-slate-950'
-                : 'bg-slate-950/90 text-slate-200 border border-white/10'
-            }">
-              ${escapeHtml(p.name)}
-            </span>
-          </div>
-        `;
-      }).join('');
-    }
+      // Bársonyfüggöny és reflektorfény állapotának vezérlése
+      const curtainLeft = document.getElementById('curtain-left');
+      const curtainRight = document.getElementById('curtain-right');
+      const curtainStatusBox = document.getElementById('curtain-status-box');
+      const spotlight = document.getElementById('gallery-spotlight');
+      const placardCard = document.getElementById('museum-placard-card');
 
-    function startLocalSpinEffects() {
-      const bottle = document.getElementById('spin-bottle-svg');
-      bottle.classList.remove('bottle-spinning');
-      void bottle.offsetWidth; // Reflow az animáció újraindításához
-      bottle.classList.add('bottle-spinning');
+      const isCurtainClosed = phase === 'PREPARING';
+      curtainLeft.className = `velvet-curtain-panel w-1/2 h-full border-r-2 border-[#C29B48] ${
+        isCurtainClosed ? 'curtain-closed-left' : 'curtain-open-left'
+      }`;
+      curtainRight.className = `velvet-curtain-panel w-1/2 h-full border-l-2 border-[#C29B48] ${
+        isCurtainClosed ? 'curtain-closed-right' : 'curtain-open-right'
+      }`;
+      curtainStatusBox.style.opacity = isCurtainClosed ? '1' : '0';
+      spotlight.style.opacity = isCurtainClosed ? '0' : '1';
 
-      if (spinTickInterval) clearInterval(spinTickInterval);
-      let tickCount = 0;
-      spinTickInterval = setInterval(() => {
-        tickCount++;
-        soundFX.playTick(0.9 + (tickCount % 4) * 0.1);
-        if (tickCount > 18 || appState.game.phase !== 'SPINNING') {
-          clearInterval(spinTickInterval);
+      // 3D Katalóguscédula átfordítása felfedéskor
+      placardCard.classList.toggle('is-flipped', phase === 'EXHIBIT_REVEAL');
+
+      // Sávok és szekciók láthatósága
+      document.getElementById('game-vote-progress-pill').classList.toggle('hidden', phase !== 'VOTING');
+      document.getElementById('game-timer-pill').classList.toggle('hidden', phase !== 'VOTING');
+      document.getElementById('vote-timer-bar-wrapper').classList.toggle('hidden', phase !== 'VOTING');
+      document.getElementById('voting-cards-section').classList.toggle('hidden', phase !== 'VOTING');
+      document.getElementById('reveal-side-panel').classList.toggle('hidden', phase !== 'EXHIBIT_REVEAL');
+
+      // Katalógusszám frissítése
+      const padNum = String(round).padStart(2, '0');
+      document.getElementById('placard-catalog-num').textContent = `Katalógusszám: #${padNum}`;
+
+      // Fázis-specifikus tartalom
+      if (phase === 'PREPARING') {
+        document.getElementById('game-phase-title').textContent = 'A kurátor előkészíti a következő műtárgyat...';
+        const progWrap = document.getElementById('preparing-progress-wrap');
+        if (preparingProgress > 0) {
+          progWrap.classList.remove('hidden');
+          document.getElementById('preparing-progress-bar').style.width = `${preparingProgress}%`;
+          document.getElementById('preparing-progress-label').textContent = `Mozgókép előkészítése: ${preparingProgress}%`;
+        } else {
+          progWrap.classList.add('hidden');
         }
-      }, 130);
-    }
+        return;
+      }
 
-    function renderSpinStage() {
-      renderCircularPlayers('spin-players-ring', null, 39);
-      const statusText = appState.game.spinStatusText || 'Az üveg pörög...';
-      document.getElementById('spin-subtitle').textContent = statusText;
-      const badge = document.getElementById('spin-mystery-badge');
-      badge.classList.toggle('hidden', !statusText.includes('%') && !statusText.includes('betöltése'));
-      badge.textContent = statusText;
-    }
-
-    function renderVotingStage() {
-      const { timeLeft, settings, currentMedia, players, votes } = appState.game;
-      const maxTime = settings.voteTime || 20;
-
-      // Visszaszámláló
-      document.getElementById('game-timer-pill').textContent = `${Math.max(0, timeLeft)} mp`;
-      const pct = Math.max(0, Math.min(100, (timeLeft / maxTime) * 100));
-      document.getElementById('vote-timer-bar').style.width = `${pct}%`;
-
-      // Szavazatok száma
-      const votesCount = Object.keys(votes).length;
-      document.getElementById('game-votes-count').textContent = `${votesCount} / ${players.length}`;
-
-      // Média megjelenítése
-      const imgWrapper = document.getElementById('vote-image-wrapper');
-      const vidWrapper = document.getElementById('vote-video-wrapper');
+      // Média megjelenítése a díszes keretben
+      const imgEl = document.getElementById('exhibit-image');
+      const vidEl = document.getElementById('exhibit-video');
       const zoomBtn = document.getElementById('btn-zoom-media');
-      const mediaBadge = document.getElementById('vote-media-badge');
 
       if (currentMedia && currentMedia.src) {
         if (currentMedia.mediaType === 'video') {
-          mediaBadge.textContent = '🎬 Rejtélyes videó';
-          imgWrapper.classList.add('hidden');
+          document.getElementById('placard-medium-title').textContent = 'Mozgókép-installáció';
+          imgEl.classList.add('hidden');
           zoomBtn.classList.add('hidden');
-          vidWrapper.classList.remove('hidden');
+          vidEl.classList.remove('hidden');
 
-          const videoEl = document.getElementById('vote-media-video');
-          if (videoEl.getAttribute('src') !== currentMedia.src) {
-            videoEl.src = currentMedia.src;
-            videoEl.play().catch(() => {});
+          if (vidEl.getAttribute('src') !== currentMedia.src) {
+            vidEl.src = currentMedia.src;
+          }
+          if (phase === 'VOTING') {
+            vidEl.play().catch(() => {});
+          } else {
+            vidEl.pause();
           }
         } else {
-          mediaBadge.textContent = '🖼️ Rejtélyes kép';
-          vidWrapper.classList.add('hidden');
-          const videoEl = document.getElementById('vote-media-video');
-          videoEl.pause();
-          videoEl.removeAttribute('src');
+          document.getElementById('placard-medium-title').textContent = 'Magángyűjteményi Fotográfia';
+          vidEl.pause();
+          vidEl.removeAttribute('src');
+          vidEl.classList.add('hidden');
 
-          imgWrapper.classList.remove('hidden');
+          imgEl.classList.remove('hidden');
           zoomBtn.classList.remove('hidden');
-          const imgEl = document.getElementById('vote-media-image');
           if (imgEl.getAttribute('src') !== currentMedia.src) {
             imgEl.src = currentMedia.src;
           }
         }
       }
 
-      // Saját tipp állapota
-      const myVote = votes[appState.myId];
-      const myVotedPlayer = myVote ? players.find(p => p.id === myVote.targetId) : null;
-      document.getElementById('my-vote-status').textContent = myVotedPlayer
-        ? `Tipped: ${myVotedPlayer.avatar} ${myVotedPlayer.name} ✓`
-        : 'Kattints egy játékosra a szavazáshoz!';
+      if (phase === 'VOTING') {
+        document.getElementById('game-phase-title').textContent = 'Kié lehet ez a műalkotás?';
 
-      // Szavazó kártyák rácsa
-      const grid = document.getElementById('vote-players-grid');
-      grid.innerHTML = players.map(p => {
-        const isMyPick = myVote && myVote.targetId === p.id;
-        return `
-          <button
-            type="button"
-            onclick="castVote('${p.id}')"
-            class="p-3.5 sm:p-4 rounded-2xl border text-left transition flex items-center gap-3 min-h-[68px] ${
-              isMyPick
-                ? 'bg-gradient-to-r from-purple-600/50 to-pink-600/50 border-pink-400 shadow-lg scale-[1.02]'
-                : 'bg-slate-950/65 hover:bg-white/10 border-white/10'
-            }"
-          >
-            <div class="w-11 h-11 rounded-xl bg-white/5 flex items-center justify-center text-2xl shrink-0">
-              ${escapeHtml(p.avatar)}
-            </div>
-            <div class="min-w-0 flex-1">
-              <div class="font-bold text-sm text-white truncate">${escapeHtml(p.name)}</div>
-              <div class="text-[11px] ${isMyPick ? 'text-amber-300 font-bold' : 'text-slate-400'}">
-                ${isMyPick ? '✓ Kiválasztva' : 'Tippelés rá'}
+        const maxTime = settings.voteTime || 25;
+        document.getElementById('game-timer-pill').textContent = `${Math.max(0, timeLeft)} mp`;
+        const pct = Math.max(0, Math.min(100, (timeLeft / maxTime) * 100));
+        document.getElementById('vote-timer-bar').style.width = `${pct}%`;
+
+        const votesCount = Object.keys(votes).length;
+        document.getElementById('game-votes-count').textContent = `${votesCount} / ${players.length}`;
+
+        const myVote = votes[appState.myId];
+        const myPickedArtist = myVote ? players.find(p => p.id === myVote.targetId) : null;
+        document.getElementById('my-vote-status').textContent = myPickedArtist
+          ? `Leadott tipped: ${myPickedArtist.avatar} ${myPickedArtist.name} ✓`
+          : 'Kattints egy kiállító nevére a szavazáshoz!';
+
+        const grid = document.getElementById('vote-players-grid');
+        grid.innerHTML = players.map(p => {
+          const isSelected = myVote && myVote.targetId === p.id;
+          return `
+            <button
+              type="button"
+              onclick="castVote('${p.id}')"
+              class="p-3.5 sm:p-4 rounded-xl border text-left transition flex items-center gap-3 min-h-[68px] ${
+                isSelected
+                  ? 'bg-[#6E2626] text-[#FAF8F5] border-[#C29B48] shadow-md scale-[1.01]'
+                  : 'bg-[#FAF8F5] hover:bg-[#F1EDE4] text-[#1B1917] border-[#C29B48]/50'
+              }"
+            >
+              <div class="w-11 h-11 rounded-lg ${
+                isSelected ? 'bg-white/15 border border-[#E5CE94]/50' : 'bg-[#ECE7DD] border border-[#C29B48]/30'
+              } flex items-center justify-center text-2xl shrink-0">
+                ${escapeHtml(p.avatar)}
               </div>
-            </div>
-          </button>
-        `;
-      }).join('');
-    }
-
-    function renderRevealStage() {
-      const { players, currentOwnerId, votes, roundDeltas, currentMedia, round, settings } = appState.game;
-
-      // Videó megállítása ha futott
-      const videoEl = document.getElementById('vote-media-video');
-      if (videoEl) videoEl.pause();
-
-      const ownerIndex = players.findIndex(p => p.id === currentOwnerId);
-      const owner = players[ownerIndex] || players[0];
-
-      document.getElementById('reveal-owner-headline').textContent =
-        `A tulajdonos: ${owner.avatar} ${owner.name}!`;
-
-      // Kör alakú játékosok megjelenítése a valódi tulajdonos kiemelésével
-      renderCircularPlayers('reveal-players-ring', owner.id, 38);
-
-      // Üveg elforgatása pontosan a tulajdonos irányába
-      const targetAngleDeg = players.length > 0 ? (360 * Math.max(0, ownerIndex)) / players.length : 0;
-      const revealBottle = document.getElementById('reveal-bottle-svg');
-      revealBottle.style.transform = 'rotate(0deg)';
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          revealBottle.style.transform = `rotate(${1080 + targetAngleDeg}deg)`;
-        });
-      });
-
-      // Média nagyítás gomb láthatósága csak képeknél
-      document.getElementById('btn-reveal-view-media').classList.toggle(
-        'hidden',
-        !currentMedia || currentMedia.mediaType !== 'image'
-      );
-
-      // Ki kire szavazott lista
-      const breakdownEl = document.getElementById('reveal-votes-breakdown');
-      breakdownEl.innerHTML = players.map(voter => {
-        const voteRec = votes[voter.id];
-        const target = voteRec ? players.find(p => p.id === voteRec.targetId) : null;
-        const isOwner = voter.id === currentOwnerId;
-        const isCorrect = !isOwner && target && target.id === currentOwnerId;
-        const delta = roundDeltas[voter.id] || 0;
-
-        let statusHtml = '<span class="text-slate-500 text-xs">Nem szavazott</span>';
-        if (target) {
-          statusHtml = `
-            <span class="text-xs font-semibold ${isCorrect ? 'text-emerald-300' : (isOwner ? 'text-amber-300' : 'text-rose-300')}">
-              → ${escapeHtml(target.avatar)} ${escapeHtml(target.name)} ${isCorrect ? '✅' : (isOwner ? '🎭' : '❌')}
-            </span>
+              <div class="min-w-0 flex-1">
+                <div class="font-bold text-sm truncate">${escapeHtml(p.name)}</div>
+                <div class="text-[11px] ${isSelected ? 'text-[#E5CE94] font-semibold' : 'text-[#57534E]'}">
+                  ${isSelected ? '✓ Tipp rögzítve' : 'Tippelés rá'}
+                </div>
+              </div>
+            </button>
           `;
-        }
+        }).join('');
+      }
 
-        return `
-          <div class="p-2.5 rounded-xl bg-slate-950/60 border border-white/5 flex items-center justify-between gap-2">
-            <div class="flex items-center gap-2 min-w-0">
-              <span class="text-lg">${escapeHtml(voter.avatar)}</span>
-              <span class="text-xs sm:text-sm font-bold text-white truncate">${escapeHtml(voter.name)}</span>
-              ${statusHtml}
+      if (phase === 'EXHIBIT_REVEAL') {
+        document.getElementById('game-phase-title').textContent = 'A műalkotás hitelesítése & Eredmények';
+
+        const owner = players.find(p => p.id === currentOwnerId) || players[0];
+        document.getElementById('placard-owner-avatar').textContent = owner.avatar;
+        document.getElementById('placard-owner-name').textContent = owner.name;
+
+        const correctVotersCount = players.filter(v => {
+          const rec = votes[v.id];
+          return v.id !== currentOwnerId && rec && rec.targetId === currentOwnerId;
+        }).length;
+
+        document.getElementById('placard-reveal-stats').textContent =
+          `${correctVotersCount} műértő találta el helyesen`;
+        document.getElementById('placard-owner-bonus-badge').textContent =
+          ownerBonusEarned > 0
+            ? `+${ownerBonusEarned} pont megtévesztési bónusz`
+            : 'Mindenki átlátott a rejtélyen!';
+
+        // Tippek részletezése
+        document.getElementById('reveal-votes-breakdown').innerHTML = players.map(voter => {
+          const voteRec = votes[voter.id];
+          const target = voteRec ? players.find(p => p.id === voteRec.targetId) : null;
+          const isOwner = voter.id === currentOwnerId;
+          const isCorrect = !isOwner && target && target.id === currentOwnerId;
+          const delta = roundDeltas[voter.id] || 0;
+
+          let detailHtml = '<span class="text-xs text-stone-400">Nem szavazott</span>';
+          if (isOwner) {
+            detailHtml = `<span class="text-xs font-semibold text-[#9A7830]">🎨 A mű alkotója</span>`;
+          } else if (target) {
+            detailHtml = `
+              <span class="text-xs font-semibold ${isCorrect ? 'text-emerald-800' : 'text-[#6E2626]'}">
+                → ${escapeHtml(target.avatar)} ${escapeHtml(target.name)} ${isCorrect ? '🏅' : '✕'}
+              </span>
+            `;
+          }
+
+          return `
+            <div class="p-2.5 rounded-lg bg-[#FAF8F5] border border-[#C29B48]/30 flex items-center justify-between gap-2">
+              <div class="flex items-center gap-2 min-w-0">
+                <span class="text-base">${escapeHtml(voter.avatar)}</span>
+                <span class="text-xs sm:text-sm font-bold text-[#1B1917] truncate">${escapeHtml(voter.name)}</span>
+                ${detailHtml}
+              </div>
+              <span class="text-xs font-serif-display font-bold px-2 py-0.5 rounded shrink-0 ${
+                delta > 0 ? 'bg-emerald-900/10 text-emerald-800 border border-emerald-700/25' : 'bg-[#ECE7DD] text-[#57534E]'
+              }">
+                +${delta} pt
+              </span>
             </div>
-            <span class="text-xs font-display font-extrabold px-2 py-0.5 rounded-lg shrink-0 ${
-              delta > 0 ? 'bg-emerald-500/20 text-emerald-300' : 'bg-white/5 text-slate-400'
-            }">
-              +${delta} pt
-            </span>
+          `;
+        }).join('');
+
+        // Aktuális rangsor
+        const sorted = [...players].sort((a, b) => b.score - a.score);
+        const medals = ['🥇', '🥈', '🥉'];
+        document.getElementById('reveal-leaderboard').innerHTML = sorted.map((p, idx) => `
+          <div class="p-2.5 rounded-lg bg-[#FAF8F5] border border-[#C29B48]/25 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="w-6 text-center font-bold text-sm">${medals[idx] || `${idx + 1}.`}</span>
+              <span class="text-base">${escapeHtml(p.avatar)}</span>
+              <span class="text-sm font-bold text-[#1B1917]">${escapeHtml(p.name)}</span>
+            </div>
+            <span class="font-serif-display font-extrabold text-[#6E2626] text-sm">${p.score} pont</span>
           </div>
-        `;
-      }).join('');
+        `).join('');
 
-      // Aktuális ranglista
-      const sorted = [...players].sort((a, b) => b.score - a.score);
-      const medals = ['🥇', '🥈', '🥉'];
-      document.getElementById('reveal-leaderboard').innerHTML = sorted.map((p, idx) => `
-        <div class="p-2.5 rounded-xl bg-slate-950/60 border border-white/5 flex items-center justify-between">
-          <div class="flex items-center gap-2.5">
-            <span class="w-6 text-center font-bold text-sm">${medals[idx] || `${idx + 1}.`}</span>
-            <span class="text-lg">${escapeHtml(p.avatar)}</span>
-            <span class="text-sm font-bold text-white">${escapeHtml(p.name)}</span>
-          </div>
-          <span class="font-display font-extrabold text-amber-300 text-sm">${p.score} pont</span>
-        </div>
-      `).join('');
-
-      // Szobagazda vezérlők
-      document.getElementById('host-reveal-controls').classList.toggle('hidden', !appState.isHost);
-      document.getElementById('guest-reveal-wait').classList.toggle('hidden', appState.isHost);
-
-      if (appState.isHost) {
-        const isLastRound = settings.totalRounds > 0 && round >= settings.totalRounds;
-        document.getElementById('btn-next-round').textContent = isLastRound
-          ? '🏆 Végeredmény megtekintése'
-          : '➡️ Következő kör';
-        document.getElementById('btn-end-infinite').classList.toggle('hidden', settings.totalRounds !== 0);
+        // Hoszt vezérlő
+        document.getElementById('host-reveal-controls').classList.toggle('hidden', !appState.isHost);
+        document.getElementById('guest-reveal-wait').classList.toggle('hidden', appState.isHost);
+        if (appState.isHost) {
+          const isLast = round >= settings.totalRounds;
+          document.getElementById('btn-next-round').textContent = isLast
+            ? '🏆 Záró Gála & Díjátadó'
+            : '➡️ Következő műtárgy';
+        }
       }
     }
 
     function renderGameOver() {
       const sorted = [...appState.game.players].sort((a, b) => b.score - a.score);
 
-      // Dobogó (2., 1., 3. sorrendben vizuálisan)
+      // Pódium (2., 1., 3. sorrendben vizuálisan)
       const podiumOrder = [sorted[1], sorted[0], sorted[2]].filter(Boolean);
       const heights = { 0: 'h-24', 1: 'h-32', 2: 'h-20' };
-      const rankLabels = { 0: '🥈 2. hely', 1: '🥇 1. hely', 2: '🥉 3. hely' };
+      const frameClasses = {
+        0: 'bg-gradient-to-t from-[#C29B48]/35 to-[#E5CE94]/60 border-2 border-[#C29B48]',
+        1: 'bg-gradient-to-t from-stone-300/60 to-stone-100 border-2 border-stone-400',
+        2: 'bg-gradient-to-t from-amber-800/25 to-amber-700/15 border-2 border-amber-700/50'
+      };
+      const rankLabels = { 0: '🥇 I. Helyezett', 1: '🥈 II. Helyezett', 2: '🥉 III. Helyezett' };
 
       document.getElementById('gameover-podium').innerHTML = podiumOrder.map(p => {
-        const actualRank = sorted.indexOf(p);
+        const rank = sorted.indexOf(p);
         return `
           <div class="flex flex-col items-center">
             <div class="text-3xl sm:text-4xl mb-1">${escapeHtml(p.avatar)}</div>
-            <div class="font-bold text-xs sm:text-sm text-white truncate max-w-[100px] mb-1">${escapeHtml(p.name)}</div>
-            <div class="text-xs font-display font-extrabold text-amber-300 mb-2">${p.score} pt</div>
-            <div class="w-full ${heights[actualRank] || 'h-20'} rounded-t-2xl ${
-              actualRank === 0
-                ? 'bg-gradient-to-t from-amber-600/40 to-amber-400/60 border-t-2 border-amber-300'
-                : 'bg-white/10 border-t border-white/20'
-            } flex items-center justify-center font-display font-bold text-xs sm:text-sm text-white">
-              ${rankLabels[actualRank]}
+            <div class="font-bold text-xs sm:text-sm text-[#1B1917] truncate max-w-[110px] mb-0.5">${escapeHtml(p.name)}</div>
+            <div class="text-xs font-serif-display font-extrabold text-[#6E2626] mb-2">${p.score} pont</div>
+            <div class="w-full ${heights[rank] || 'h-20'} rounded-t-xl ${frameClasses[rank] || ''} flex items-center justify-center font-serif-display font-bold text-xs sm:text-sm text-[#1B1917] px-1">
+              ${rankLabels[rank]}
             </div>
           </div>
         `;
       }).join('');
 
       // Különdíjak
-      const bestDetective = [...sorted].sort((a, b) => (b.correctGuesses || 0) - (a.correctGuesses || 0))[0];
-      const bestTrickster = [...sorted].sort((a, b) => (b.fooledCount || 0) - (a.fooledCount || 0))[0];
+      const sharpestConnoisseur = [...sorted].sort((a, b) => (b.correctGuesses || 0) - (a.correctGuesses || 0))[0];
+      const mostMysteriousCreator = [...sorted].sort((a, b) => (b.fooledCount || 0) - (a.fooledCount || 0))[0];
 
       document.getElementById('gameover-awards').innerHTML = `
-        <div class="p-4 rounded-2xl bg-purple-950/50 border border-purple-500/30 flex items-center gap-3">
-          <span class="text-3xl">🕵️</span>
+        <div class="p-4 rounded-xl bg-[#FAF8F5] border-2 border-[#C29B48]/60 flex items-center gap-3.5 shadow-xs">
+          <div class="w-12 h-12 rounded-full brass-seal flex items-center justify-center text-2xl shrink-0">🧐</div>
           <div>
-            <div class="text-[11px] uppercase tracking-wider text-purple-300 font-bold">Mesterdetektív</div>
-            <div class="font-bold text-white text-sm">${escapeHtml(bestDetective.avatar)} ${escapeHtml(bestDetective.name)}</div>
-            <div class="text-xs text-slate-400">${bestDetective.correctGuesses || 0} helyes találat</div>
+            <div class="text-[11px] uppercase tracking-[0.15em] text-[#9A7830] font-bold">„A Legélesebb Szemű Műértő”</div>
+            <div class="font-serif-display font-bold text-base text-[#1B1917]">${escapeHtml(sharpestConnoisseur.avatar)} ${escapeHtml(sharpestConnoisseur.name)}</div>
+            <div class="text-xs text-[#57534E]">${sharpestConnoisseur.correctGuesses || 0} hibátlan műtárgy-azonosítás</div>
           </div>
         </div>
-        <div class="p-4 rounded-2xl bg-pink-950/50 border border-pink-500/30 flex items-center gap-3">
-          <span class="text-3xl">🎭</span>
+        <div class="p-4 rounded-xl bg-[#FAF8F5] border-2 border-[#6E2626]/40 flex items-center gap-3.5 shadow-xs">
+          <div class="w-12 h-12 rounded-full bg-[#6E2626] border border-[#C29B48] flex items-center justify-center text-2xl shrink-0">🎭</div>
           <div>
-            <div class="text-[11px] uppercase tracking-wider text-pink-300 font-bold">Nagy Megtévesztő</div>
-            <div class="font-bold text-white text-sm">${escapeHtml(bestTrickster.avatar)} ${escapeHtml(bestTrickster.name)}</div>
-            <div class="text-xs text-slate-400">${bestTrickster.fooledCount || 0} játékost vert át</div>
+            <div class="text-[11px] uppercase tracking-[0.15em] text-[#6E2626] font-bold">„A Legrejtélyesebb Alkotó”</div>
+            <div class="font-serif-display font-bold text-base text-[#1B1917]">${escapeHtml(mostMysteriousCreator.avatar)} ${escapeHtml(mostMysteriousCreator.name)}</div>
+            <div class="text-xs text-[#57534E]">${mostMysteriousCreator.fooledCount || 0} látogatót tévesztett meg</div>
           </div>
         </div>
       `;
 
-      // Teljes lista
+      // Teljes rangsor
       document.getElementById('gameover-full-list').innerHTML = sorted.map((p, idx) => `
-        <div class="p-3 rounded-2xl bg-slate-950/60 border border-white/10 flex items-center justify-between">
+        <div class="p-3 rounded-xl bg-[#FAF8F5] border border-[#C29B48]/35 flex items-center justify-between">
           <div class="flex items-center gap-3">
-            <span class="font-display font-bold text-slate-400 w-6">${idx + 1}.</span>
+            <span class="font-serif-display font-bold text-[#9A7830] w-6">${idx + 1}.</span>
             <span class="text-xl">${escapeHtml(p.avatar)}</span>
-            <span class="font-bold text-sm text-white">${escapeHtml(p.name)}</span>
+            <span class="font-bold text-sm text-[#1B1917]">${escapeHtml(p.name)}</span>
           </div>
-          <span class="font-display font-black text-amber-300">${p.score} pont</span>
+          <span class="font-serif-display font-black text-[#6E2626]">${p.score} pont</span>
         </div>
       `).join('');
 
